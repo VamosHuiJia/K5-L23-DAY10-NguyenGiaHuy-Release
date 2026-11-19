@@ -1,0 +1,12 @@
+target,type,human_verdict,machine_result,resolution,reviewer,note
+000000017379,bbox_out_of_bounds,confirmed,confirmed,agreed,N,ảnh sink D2 và tv D1 có bbox vượt quá ảnh
+000000011122,duplicate_box,confirmed,confirmed,agreed,Nguyễn Hải Đăng,"2 bbox `stop sign` cùng chồng lên nhau, nên giữ bbox liền, bỏ bbox occluded"
+000000017436,duplicate_box,confirmed,confirmed,agreed,Nguyễn Hải Đăng,ảnh `person` D2 bị duplicate
+000000007795,guideline_mismatch,confirmed,confirmed,agreed,Nguyễn Hải Đăng,mismatch `scene_leak` (cái này phải do máy check chứ)
+000000014380,invalid_category_id,confirmed,confirmed,agreed,Nguyễn Hải Đăng,ở D1 `car` có segment lỗi này
+000000018150,missing_image,confirmed,confirmed,agreed,Nguyễn Hải Đăng,cái này cũng cần ktra à?
+scene_615,scene_leak,,confirmed,machine_confirmed,Nguyễn Hải Đăng,"không thấy bộ val, để máy check"
+000000007278,thing_overlap,confirmed,confirmed,agreed,Nguyễn Hải Đăng,"Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 6973051 khai area 5792, thực tế 4638 pixel, chênh 1154 pixel. Xác nhận theo sự đồng ý của người review."
+000000015956,thing_overlap,confirmed,confirmed,agreed,Nguyễn Hải Đăng,"Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 7634552 khai area 357, thực tế 261 pixel, chênh 96 pixel. Xác nhận theo sự đồng ý của người review."
+000000013659,wrong_hash,,confirmed,machine_confirmed,Nguyễn Hải Đăng,máy check
+000000025393,wrong_hash,,confirmed,machine_confirmed,Nguyễn Hải Đăng,máy check

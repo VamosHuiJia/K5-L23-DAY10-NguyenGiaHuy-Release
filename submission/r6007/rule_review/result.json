@@ -1,0 +1,745 @@
+{
+  "schema_version": 1,
+  "mode": "rule_review_audit",
+  "release_id": "lab250_5a8f63fb9dd0",
+  "fingerprint": "beb7b46b4be1324fe1fd172bd3d69300f2bbfc4e5a079503e2aebe9dda031d34",
+  "session_reviewer": "Nguyễn Hải Đăng",
+  "summary": {
+    "audit_complete": true,
+    "findings": 11,
+    "human_confirmed": 8,
+    "human_rejected": 0,
+    "delegated_to_machine": 3,
+    "machine_confirmed": 11,
+    "human_machine_disagreements": 0
+  },
+  "records": [
+    {
+      "id": "bbox_out_of_bounds:000000017379",
+      "type": "bbox_out_of_bounds",
+      "target": "000000017379",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "ảnh sink D2 và tv D1 có bbox vượt quá ảnh",
+        "reviewer": "N"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "image_bounds_xyxy": [
+          0,
+          0,
+          478,
+          640
+        ],
+        "overflow_boxes": [
+          {
+            "row": 2,
+            "class_id": 71,
+            "class_name": "sink",
+            "bbox_xyxy": [
+              379.68974,
+              522.07008,
+              508.93711599999995,
+              575.28032
+            ],
+            "normalized": [
+              0.929526,
+              0.857305,
+              0.270392,
+              0.083141
+            ],
+            "raw": "71 0.929526 0.857305 0.270392 0.083141",
+            "overflow_pixels": {
+              "left": 0,
+              "top": 0,
+              "right": 30.937115999999946,
+              "bottom": 0
+            }
+          },
+          {
+            "row": 3,
+            "class_id": 71,
+            "class_name": "sink",
+            "bbox_xyxy": [
+              4.1899090000000045,
+              590.63008,
+              190.42970300000002,
+              640.0003200000001
+            ],
+            "normalized": [
+              0.203577,
+              0.96143,
+              0.389623,
+              0.077141
+            ],
+            "raw": "71 0.203577 0.961430 0.389623 0.077141",
+            "overflow_pixels": {
+              "left": 0,
+              "top": 0,
+              "right": 0,
+              "bottom": 0.00032000000010157237
+            }
+          }
+        ],
+        "note": "Hiện cả tràn nhẹ theo định nghĩa GUIDE; validator P1 hiện có tolerance 0.01 chuẩn hóa."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 41,
+          "quote": "| | `bbox_out_of_bounds` | box vượt ra ngoài ảnh |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L41"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 67,
+          "quote": "- **Nhãn detection:** `invalid_class`, `bbox_out_of_bounds` (box có thể chỉ tràn mép một chút), `duplicate_box` (box lặp lại cùng lớp, **cùng kích thước**, chỉ lệch 1–2 pixel; COCO có cặp box tự nhiên chồng nhau tới IoU khoảng 0,66, nên đừng đặt ngưỡng thấp).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L67"
+        }
+      ]
+    },
+    {
+      "id": "duplicate_box:000000011122",
+      "type": "duplicate_box",
+      "target": "000000011122",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "2 bbox `stop sign` cùng chồng lên nhau, nên giữ bbox liền, bỏ bbox occluded",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "duplicate_pairs": [
+          {
+            "box_rows": [
+              1,
+              2
+            ],
+            "class_name": "stop sign",
+            "center_delta_pixels": [
+              2.0000000000000284,
+              0.9998400000000061
+            ],
+            "size_delta_pixels": [
+              8.526512829121202e-14,
+              2.842170943040401e-14
+            ],
+            "bbox_iou": 0.9285806468495178
+          }
+        ],
+        "validator_tolerances": {
+          "center_pixels": 2.01,
+          "size_pixels": 0.25
+        },
+        "note": "Đây là tolerance code hiện tại; GUIDE mô tả cùng lớp, cùng kích thước và lệch 1–2 pixel."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 42,
+          "quote": "| | `duplicate_box` | một box bị lặp: cùng lớp, cùng kích thước, lệch 1–2 pixel |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L42"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 67,
+          "quote": "- **Nhãn detection:** `invalid_class`, `bbox_out_of_bounds` (box có thể chỉ tràn mép một chút), `duplicate_box` (box lặp lại cùng lớp, **cùng kích thước**, chỉ lệch 1–2 pixel; COCO có cặp box tự nhiên chồng nhau tới IoU khoảng 0,66, nên đừng đặt ngưỡng thấp).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L67"
+        }
+      ]
+    },
+    {
+      "id": "duplicate_box:000000017436",
+      "type": "duplicate_box",
+      "target": "000000017436",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "ảnh `person` D2 bị duplicate",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "duplicate_pairs": [
+          {
+            "box_rows": [
+              1,
+              4
+            ],
+            "class_name": "person",
+            "center_delta_pixels": [
+              1.9999979999999908,
+              1.0003199999999879
+            ],
+            "size_delta_pixels": [
+              2.842170943040401e-14,
+              1.1368683772161603e-13
+            ],
+            "bbox_iou": 0.9291418929586899
+          }
+        ],
+        "validator_tolerances": {
+          "center_pixels": 2.01,
+          "size_pixels": 0.25
+        },
+        "note": "Đây là tolerance code hiện tại; GUIDE mô tả cùng lớp, cùng kích thước và lệch 1–2 pixel."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 42,
+          "quote": "| | `duplicate_box` | một box bị lặp: cùng lớp, cùng kích thước, lệch 1–2 pixel |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L42"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 67,
+          "quote": "- **Nhãn detection:** `invalid_class`, `bbox_out_of_bounds` (box có thể chỉ tràn mép một chút), `duplicate_box` (box lặp lại cùng lớp, **cùng kích thước**, chỉ lệch 1–2 pixel; COCO có cặp box tự nhiên chồng nhau tới IoU khoảng 0,66, nên đừng đặt ngưỡng thấp).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L67"
+        }
+      ]
+    },
+    {
+      "id": "guideline_mismatch:000000007795",
+      "type": "guideline_mismatch",
+      "target": "000000007795",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "mismatch `scene_leak` (cái này phải do máy check chứ)",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "image_metadata": {
+          "image": "000000007795",
+          "scene_id": "scene_363",
+          "split": "train",
+          "job_id": "J04",
+          "guideline_version": "v1.2"
+        },
+        "authoritative_job": {
+          "job_id": "J04",
+          "annotator": "A04",
+          "reviewer": "Q01",
+          "guideline": "v1.3"
+        },
+        "versions_match": false
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 44,
+          "quote": "| | `guideline_mismatch` | guideline của ảnh khác guideline ghi ở job của nó |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L44"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 68,
+          "quote": "- **Metadata:** `scene_leak` (target là `scene_id`), `guideline_mismatch` (so với guideline của **job** trong `jobs.csv`).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L68"
+        },
+        {
+          "source": "runs/r6007/delivery/guideline/changelog.md",
+          "line": 4,
+          "quote": "- Lớp `cup`: vật bị che trên 50% hoặc cắt ở mép ảnh **vẫn phải gán box** (v1.2 cho phép bỏ qua). Áp dụng cho mọi job tạo sau khi v1.3 ban hành.",
+          "url": null
+        }
+      ]
+    },
+    {
+      "id": "invalid_category_id:000000014380",
+      "type": "invalid_category_id",
+      "target": "000000014380",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "ở D1 `car` có segment lỗi này",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "segments": [
+          {
+            "id": 4341613,
+            "category_id": 160,
+            "class_name": "INVALID CATEGORY 160",
+            "valid_category": false,
+            "isthing": null,
+            "iscrowd": 0,
+            "declared_area": 108,
+            "mask_pixels": 108,
+            "bbox_xyxy": [
+              75,
+              228,
+              88,
+              238
+            ]
+          }
+        ],
+        "valid_category_ids": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          27,
+          28,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          67,
+          70,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          92,
+          93,
+          95,
+          100,
+          107,
+          109,
+          112,
+          118,
+          119,
+          122,
+          125,
+          128,
+          130,
+          133,
+          138,
+          141,
+          144,
+          145,
+          147,
+          148,
+          149,
+          151,
+          154,
+          155,
+          156,
+          159,
+          161,
+          166,
+          168,
+          171,
+          175,
+          176,
+          177,
+          178,
+          180,
+          181,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200
+        ],
+        "mask_error": null
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 45,
+          "quote": "| Luật (panoptic) | `invalid_category_id` | category_id không có trong `categories` |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L45"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 69,
+          "quote": "- **Panoptic:** `invalid_category_id`, `thing_overlap` (đếm pixel của từng segment trong mask rồi so với `area`; `scripts/pngutil.py` có hàm đọc PNG).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L69"
+        }
+      ]
+    },
+    {
+      "id": "missing_image:000000018150",
+      "type": "missing_image",
+      "target": "000000018150",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "cái này cũng cần ktra à?",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "manifest_image": "images/000000018150.jpg",
+        "image_file_exists": false,
+        "manifest_image_sha256": "c49c2bb7e3ea8951c997f9984d13cb9f2bf8c1a0b4f7c398c0317f36435059f0",
+        "label_file_exists": true,
+        "mask_file_exists": true,
+        "explanation": "Đối chiếu file với manifest; không cần có ảnh để xác nhận một file bị thiếu."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 38,
+          "quote": "| Luật (detection) | `missing_image` | manifest có ảnh nhưng thiếu file |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L38"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 66,
+          "quote": "- **File:** `missing_image`, `wrong_hash` (tự tính sha256 rồi so; đừng chỉ kiểm định dạng 64 ký tự).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L66"
+        }
+      ]
+    },
+    {
+      "id": "scene_leak:scene_615",
+      "type": "scene_leak",
+      "target": "scene_615",
+      "human": {
+        "reviewed": true,
+        "verdict": "",
+        "note": "không thấy bộ val, để máy check",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "machine_confirmed",
+      "facts": {
+        "scene_id": "scene_615",
+        "splits": [
+          "train",
+          "val"
+        ],
+        "members": [
+          {
+            "image": "000000025057",
+            "scene_id": "scene_615",
+            "split": "val",
+            "job_id": "J10",
+            "guideline_version": "v1.3"
+          },
+          {
+            "image": "000000025096",
+            "scene_id": "scene_615",
+            "split": "val",
+            "job_id": "J10",
+            "guideline_version": "v1.3"
+          },
+          {
+            "image": "000000025139",
+            "scene_id": "scene_615",
+            "split": "train",
+            "job_id": "J10",
+            "guideline_version": "v1.3"
+          },
+          {
+            "image": "000000025181",
+            "scene_id": "scene_615",
+            "split": "val",
+            "job_id": "J10",
+            "guideline_version": "v1.3"
+          },
+          {
+            "image": "000000025228",
+            "scene_id": "scene_615",
+            "split": "val",
+            "job_id": "J10",
+            "guideline_version": "v1.3"
+          }
+        ]
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 43,
+          "quote": "| | `scene_leak` | một cảnh có ảnh ở cả train và val |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L43"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 68,
+          "quote": "- **Metadata:** `scene_leak` (target là `scene_id`), `guideline_mismatch` (so với guideline của **job** trong `jobs.csv`).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L68"
+        }
+      ]
+    },
+    {
+      "id": "thing_overlap:000000007278",
+      "type": "thing_overlap",
+      "target": "000000007278",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 6973051 khai area 5792, thực tế 4638 pixel, chênh 1154 pixel. Xác nhận theo sự đồng ý của người review.",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "segments": [
+          {
+            "id": 6973051,
+            "category_id": 1,
+            "class_name": "person",
+            "valid_category": true,
+            "isthing": 1,
+            "iscrowd": 0,
+            "declared_area": 5792,
+            "mask_pixels": 4638,
+            "bbox_xyxy": [
+              190,
+              59,
+              312,
+              154
+            ]
+          }
+        ],
+        "valid_category_ids": null,
+        "mask_error": null
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 46,
+          "quote": "| | `thing_overlap` | `area` khai nhiều hơn số pixel thật của segment (bị vật khác đè) |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L46"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 69,
+          "quote": "- **Panoptic:** `invalid_category_id`, `thing_overlap` (đếm pixel của từng segment trong mask rồi so với `area`; `scripts/pngutil.py` có hàm đọc PNG).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L69"
+        }
+      ]
+    },
+    {
+      "id": "thing_overlap:000000015956",
+      "type": "thing_overlap",
+      "target": "000000015956",
+      "human": {
+        "reviewed": true,
+        "verdict": "confirmed",
+        "note": "Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 7634552 khai area 357, thực tế 261 pixel, chênh 96 pixel. Xác nhận theo sự đồng ý của người review.",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "agreed",
+      "facts": {
+        "segments": [
+          {
+            "id": 7634552,
+            "category_id": 85,
+            "class_name": "clock",
+            "valid_category": true,
+            "isthing": 1,
+            "iscrowd": 0,
+            "declared_area": 357,
+            "mask_pixels": 261,
+            "bbox_xyxy": [
+              493,
+              126,
+              515,
+              147
+            ]
+          }
+        ],
+        "valid_category_ids": null,
+        "mask_error": null
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 46,
+          "quote": "| | `thing_overlap` | `area` khai nhiều hơn số pixel thật của segment (bị vật khác đè) |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L46"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 69,
+          "quote": "- **Panoptic:** `invalid_category_id`, `thing_overlap` (đếm pixel của từng segment trong mask rồi so với `area`; `scripts/pngutil.py` có hàm đọc PNG).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L69"
+        }
+      ]
+    },
+    {
+      "id": "wrong_hash:000000013659",
+      "type": "wrong_hash",
+      "target": "000000013659",
+      "human": {
+        "reviewed": true,
+        "verdict": "",
+        "note": "máy check",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "machine_confirmed",
+      "facts": {
+        "file": "images/000000013659.jpg",
+        "expected_sha256": "ab798f0ee5d1bed52376a5ee8bfbd973cb4c4fface481a9bc7a3ff5d9c57b4c7",
+        "actual_sha256": "b357d19dee467587a8788ac4e5b45677f4fde1b62726c690795e188ae75d822b",
+        "hashes_match": false,
+        "instruction": "Mở ảnh để kiểm tra còn nguyên hay hỏng; hash khác không tự chứng minh ảnh bị hỏng."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 39,
+          "quote": "| | `wrong_hash` | sha256 ghi trong manifest không phải của file đó |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L39"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 66,
+          "quote": "- **File:** `missing_image`, `wrong_hash` (tự tính sha256 rồi so; đừng chỉ kiểm định dạng 64 ký tự).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L66"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 131,
+          "quote": "- **Sửa ngay trong v2** (không cần gán lại): `wrong_hash`, `guideline_mismatch` (guideline theo job), `scene_leak` (đưa cả cảnh về một split). Với `wrong_hash`, **mở ảnh kiểm trước**: ảnh còn nguyên (mở được, đúng nội dung) thì chỉ manifest sai, ghi hash mới; ảnh hỏng thì đưa vào rework.",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L131"
+        }
+      ]
+    },
+    {
+      "id": "wrong_hash:000000025393",
+      "type": "wrong_hash",
+      "target": "000000025393",
+      "human": {
+        "reviewed": true,
+        "verdict": "",
+        "note": "máy check",
+        "reviewer": "Nguyễn Hải Đăng"
+      },
+      "machine_result": "confirmed",
+      "machine_provenance": "fresh validator run; delivery evidence recomputed",
+      "resolution": "machine_confirmed",
+      "facts": {
+        "file": "images/000000025393.jpg",
+        "expected_sha256": "f3a2974ce3686332609124c70e3e6a2e3aca43fccf1cd1bd7c5c03820977f57d",
+        "actual_sha256": "677e993476aed8ceca9bd9b8edbeb3c8874ed19488c9050cb8b55057a5f1547a",
+        "hashes_match": false,
+        "instruction": "Mở ảnh để kiểm tra còn nguyên hay hỏng; hash khác không tự chứng minh ảnh bị hỏng."
+      },
+      "citations": [
+        {
+          "source": "docs/DELIVERY.md",
+          "line": 39,
+          "quote": "| | `wrong_hash` | sha256 ghi trong manifest không phải của file đó |",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/docs/DELIVERY.md#L39"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 66,
+          "quote": "- **File:** `missing_image`, `wrong_hash` (tự tính sha256 rồi so; đừng chỉ kiểm định dạng 64 ký tự).",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L66"
+        },
+        {
+          "source": "GUIDE.md",
+          "line": 131,
+          "quote": "- **Sửa ngay trong v2** (không cần gán lại): `wrong_hash`, `guideline_mismatch` (guideline theo job), `scene_leak` (đưa cả cảnh về một split). Với `wrong_hash`, **mở ảnh kiểm trước**: ảnh còn nguyên (mở được, đúng nội dung) thì chỉ manifest sai, ghi hash mới; ảnh hỏng thì đưa vào rework.",
+          "url": "https://github.com/VamosHuiJia/K5-L23-DAY10-NguyenGiaHuy-Release/blob/nguyenhaidang_03190/GUIDE.md#L131"
+        }
+      ]
+    }
+  ],
+  "new_machine_findings": [],
+  "human_verdicts_changed": false,
+  "canonical_errors_modified": false,
+  "note": "machine_result là kết quả luật tự động, không phải verdict hoặc chữ ký của người review.",
+  "provenance": {
+    "human_source": "rule_review_progress.json",
+    "human_source_sha256": "2f7e852db2a272dc4b3ae665e0f3e78e7d00ec5574feecb46722042d773c51b0",
+    "machine_source": "machine_rules.json",
+    "machine_source_sha256": "509292e8f57fbb85c3376f33ea2271ee3d5ef48cfcd216208f4fd49ae29fe846"
+  }
+}

@@ -69,3 +69,21 @@ tập con. Lô sạch có 0 ứng viên ở ngưỡng khởi đầu.
   khớp định nghĩa category_swap của lab; không đổi type hoặc verdict qua điểm.
   Có ảnh được báo hai loại lỗi; khi làm P3, người phụ trách cần dùng đúng quy
   tắc đếm target của lab, không coi 19 finding là 19 ảnh khác nhau.
+
+## 7. Evaluation bổ sung cho 11 lỗi luật
+
+- Nguồn: `submission/r6007/rule_review/`, gồm progress người xem, kết quả chạy
+  máy, bằng chứng số liệu và trích dẫn guideline cho từng finding.
+- Sau khi người dùng chấp thuận sửa hai thing_overlap ngày 20/11/2026:
+  8 human confirmed, 0 human rejected; 3 mục scene/hash giao máy. Máy tái lập
+  đủ 11 lỗi luật, không còn bất đồng. Không ép người xem điền state UI của các
+  mục scene_leak/wrong_hash hoặc tự ký kết quả máy dưới tên người xem.
+- Thing_overlap tại 000000007278: area 5792 > 4638 pixel thật; tại 000000015956:
+  area 357 > 261 pixel thật. Hai rejected được đổi thành confirmed theo sự đồng
+  ý rõ ràng của người dùng, có note số liệu và lịch sử trước/sau trong corrections.
+- Bản trước sửa giữ nguyên trong `rule_review_progress.before_correction.json`;
+  `corrections.json` lưu SHA-256 và hai thay đổi. Các verdict khác giữ nguyên.
+- Scene_615: 4 val/1 train. Hai wrong_hash: checksum tính từ bytes khác manifest.
+  Đây là bằng chứng máy, không phải kết luận thị giác rằng ảnh đã hỏng.
+- Evaluation luật độc lập với review semantic 10 dòng ở trên. Hai semantic
+  rejected không bị đổi; errors bài nộp vẫn 19 finding, không cần chấm lại F1.

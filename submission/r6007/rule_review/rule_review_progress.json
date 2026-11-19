@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "mode": "rule_review",
+  "release_id": "lab250_5a8f63fb9dd0",
+  "fingerprint": "beb7b46b4be1324fe1fd172bd3d69300f2bbfc4e5a079503e2aebe9dda031d34",
+  "reviewer": "Nguyễn Hải Đăng",
+  "decisions": {
+    "bbox_out_of_bounds:000000017379": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "ảnh sink D2 và tv D1 có bbox vượt quá ảnh",
+      "reviewer": "N"
+    },
+    "duplicate_box:000000011122": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "2 bbox `stop sign` cùng chồng lên nhau, nên giữ bbox liền, bỏ bbox occluded",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "duplicate_box:000000017436": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "ảnh `person` D2 bị duplicate",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "guideline_mismatch:000000007795": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "mismatch `scene_leak` (cái này phải do máy check chứ)",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "invalid_category_id:000000014380": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "ở D1 `car` có segment lỗi này",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "missing_image:000000018150": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "cái này cũng cần ktra à?",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "scene_leak:scene_615": {
+      "reviewed": true,
+      "verdict": "",
+      "note": "không thấy bộ val, để máy check",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "thing_overlap:000000007278": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 6973051 khai area 5792, thực tế 4638 pixel, chênh 1154 pixel. Xác nhận theo sự đồng ý của người review.",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "thing_overlap:000000015956": {
+      "reviewed": true,
+      "verdict": "confirmed",
+      "note": "Đồng ý kết quả máy sau đối chiếu định nghĩa thing_overlap (docs/DELIVERY.md:46): segment 7634552 khai area 357, thực tế 261 pixel, chênh 96 pixel. Xác nhận theo sự đồng ý của người review.",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "wrong_hash:000000013659": {
+      "reviewed": true,
+      "verdict": "",
+      "note": "máy check",
+      "reviewer": "Nguyễn Hải Đăng"
+    },
+    "wrong_hash:000000025393": {
+      "reviewed": true,
+      "verdict": "",
+      "note": "máy check",
+      "reviewer": "Nguyễn Hải Đăng"
+    }
+  }
+}
