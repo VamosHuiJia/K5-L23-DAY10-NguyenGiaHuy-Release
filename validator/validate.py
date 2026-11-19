@@ -15,6 +15,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import pngutil
+try:
+    from . import cross_check
+except ImportError:
+    import cross_check
 
 
 def _read_json(path: Path) -> dict:
@@ -327,6 +331,14 @@ def main() -> int:
     delivery = args.delivery
     if not delivery.is_dir():
         parser.error(f"delivery không tồn tại: {delivery}")
+    try:
+        cross_check.output_path(delivery, args.out)
+        if args.candidates:
+            cross_check.output_path(delivery, args.candidates)
+            if args.out.resolve() == args.candidates.resolve():
+                raise ValueError("--out and --candidates must be different files")
+    except ValueError as exc:
+        parser.error(str(exc))
 
     findings = []
     findings.extend(check_file_detection(delivery))
@@ -348,8 +360,10 @@ def main() -> int:
     args.out.write_text(json.dumps(output, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     if args.candidates:
+        candidate_document = cross_check.generate_candidates(delivery)
         args.candidates.parent.mkdir(parents=True, exist_ok=True)
-        args.candidates.write_text(json.dumps({"candidates": []}, indent=2) + "\n", encoding="utf-8")
+        args.candidates.write_text(json.dumps(candidate_document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"Ứng viên cần người xem: {json.dumps(candidate_document['summary'], ensure_ascii=False)}")
 
     print(f"Đã ghi {len(output['errors'])} lỗi luật vào {args.out}")
     return 0

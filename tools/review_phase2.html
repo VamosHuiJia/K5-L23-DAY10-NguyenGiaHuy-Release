@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phase 2 · Review của nhóm</title>
+<style>
+:root{color-scheme:light;--ink:#17293c;--muted:#526377;--line:#d7e1e8;--accent:#006d77}
+*{box-sizing:border-box}body{margin:0;background:#f1f5f8;color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+header{padding:20px 28px;background:#142c40;color:white}h1{font-size:23px;margin:0 0 4px}header p{margin:0;color:#c6dce7}
+main{max-width:1550px;margin:auto;padding:20px}button,input,select,textarea{font:inherit}button{border:1px solid var(--line);border-radius:6px;padding:8px 12px;background:white;color:var(--ink);cursor:pointer}button:hover{border-color:var(--accent)}button.primary{background:var(--accent);color:white}button:disabled{opacity:.5;cursor:default}
+input,select,textarea{padding:8px;border:1px solid #aebfc9;border-radius:5px;background:white;color:var(--ink)}label{display:inline-flex;gap:6px;align-items:center}textarea{width:100%;min-height:82px;resize:vertical}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}.bar input[type=text]{min-width:190px}.panel{background:white;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}.grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,1fr);gap:16px}.muted{color:var(--muted)}.small{font-size:13px}.notice{padding:10px 14px;background:#fff5db;border-radius:6px;margin-bottom:14px}#message{white-space:pre-wrap;color:#843f09}h2{font-size:19px;margin:0 0 8px}h3{font-size:15px;margin:10px 0}
+#viewport{height:540px;overflow:auto;background:#101c27;border-radius:6px;display:block}#drawing{display:block;max-width:none}#drawing text{paint-order:stroke;stroke:#12202c;stroke-width:2px;font:12px monospace}.decision{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}.decision .bar{margin-bottom:8px}.decision select{max-width:100%}#evidence{max-height:260px;overflow:auto}#evidence p{padding:8px;background:#f1f5f8;margin:6px 0;border-radius:5px}a{color:#006d77}input[type=checkbox]{accent-color:var(--accent)}#candidate{max-width:420px}#progress{font-weight:600}details summary{cursor:pointer}
+@media(max-width:950px){.grid{grid-template-columns:1fr}#viewport{height:420px}main{padding:12px}}
+</style>
+<header><h1>Phase 2 · Xem ảnh, đối chiếu nhãn</h1><p id="release"></p></header>
+<main>
+<div id="storageNotice" class="notice">Ứng viên chưa phải lỗi. Mở ảnh và tự kết luận; không sửa delivery. Xuất progress JSON trước khi đóng trang. CVAT không bắt buộc.</div>
+<section class="panel">
+<div class="bar"><label>Người review <input id="reviewer" type="text" placeholder="Nguyễn Hải Đăng" autocomplete="name"></label><span id="progress" role="status"></span></div>
+<div class="bar"><label>Lọc ảnh <input id="imageFilter" type="text" placeholder="Mã ảnh hoặc một phần mã"></label><label>Loại <select id="typeFilter"><option value="">Tất cả</option></select></label><label>Trạng thái <select id="statusFilter"><option value="">Tất cả</option><option value="pending">Chưa xong</option><option value="done">Đã xong</option></select></label></div>
+<div class="bar"><button id="previous">← Trước</button><label>Ứng viên <select id="candidate"></select></label><button id="next">Sau →</button></div>
+</section>
+<div class="grid">
+<section class="panel"><h2 id="heading"></h2><p id="reason" class="muted"></p>
+<div class="bar"><label><input id="showBoxes" type="checkbox" checked> Box detection (xanh)</label><label><input id="showMask" type="checkbox" checked> Mask panoptic (cam)</label><label>Zoom <input id="zoom" type="range" min="25" max="400" step="25" value="100"></label><button id="fit">Vừa khung</button></div>
+<div id="viewport"><svg id="drawing" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ảnh gốc với box detection và vùng mask panoptic"></svg></div>
+<h3>Bằng chứng đối chiếu</h3><div id="evidence" class="small"></div>
+</section>
+<section class="panel"><h2>Kết luận của người xem</h2>
+<p id="assessment" class="notice small" hidden></p>
+<p class="small muted">Đánh giá đề xuất bbox đang được giao. Confirmed và rejected đều tính là đã review khi có xác nhận đã xem, tên và ghi chú ≥ 20 ký tự. Lỗi mask là tùy chọn qua Thêm loại khác; không bắt buộc để hoàn tất phần bbox.</p>
+<label><input id="reviewed" type="checkbox"> Tôi đã mở và trực tiếp xem vùng vật thể</label>
+<div id="decisions"></div>
+<div class="bar"><label>Thêm loại khác <select id="extraType"></select></label><button id="addType">Thêm kết luận</button></div>
+<p class="small muted">Nếu chưa rõ: để trống verdict, lưu progress và nhờ người khác xem. Không dùng rejected để thay cho “chưa biết”.</p>
+</section></div>
+<section class="panel"><div class="bar"><button id="saveServer" disabled>Lưu ngay vào repo</button><button id="finishServer" class="primary" disabled>Hoàn tất phần này</button><button id="exportProgress">Lưu progress JSON</button><label>Nạp progress JSON <input id="importProgress" type="file" accept=".json,application/json"></label><button id="exportCsv">Xuất CSV hoàn tất</button></div><p id="message" role="alert"></p><details><summary>Cách lưu và bàn giao</summary><p>Khi chạy bằng server local: tự lưu sau khi sửa, có thể bấm Lưu ngay vào repo. Khi đã xem hết phần này, bấm Hoàn tất phần này để cho phép tổng hợp. Khi mở file offline: trình duyệt tải JSON/CSV về Downloads; cần bàn giao file thủ công. Lưu JSON dự phòng nếu server lỗi hoặc có xung đột; không nhập bản cũ chồng lên bản mới.</p></details></section>
+</main>
+<script id="reviewData" type="application/json">/*__REVIEW_DATA__*/</script>
+<script>
+'use strict';
+const DATA=JSON.parse(document.getElementById('reviewData').textContent);
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+let decisions={},currentId=DATA.candidates[0]?.id||null,dirty=false;
+let serverRevision=0,submitted=false,saveTimer=null,saving=false,saveAgain=false,saveBlocked=false;
+const live=!!DATA.persistence&&typeof location!=='undefined'&&location.protocol==='http:';
+const scope=DATA.candidates.map(c=>c.id);
+const candidateMap=new Map(DATA.candidates.map(c=>[c.id,c]));
+const message=text=>{$('message').textContent=text;};
+function initial(c){return {reviewed:false,rows:[{type:c.type,verdict:'',note:'',reviewer:''}]};}
+function decision(c){return decisions[c.id]||initial(c);}
+function activeRows(c,d){return d.rows.filter(r=>r.type===c.type||r.explicit===true||r.verdict||(typeof r.note==='string'&&r.note.trim()));}
+function invalid(c,d){
+ if(!DATA.assets[c.image]?.image_data||DATA.assets[c.image]?.error)return 'Không có ảnh để review';
+ if(d?.reviewed!==true)return 'Chưa xác nhận đã xem ảnh';
+ if(!Array.isArray(d.rows)||!d.rows.length||d.rows.some(r=>!r||typeof r!=='object'))return 'Dữ liệu kết luận không hợp lệ';
+ const types=d.rows.map(r=>r.type);
+ if(new Set(types).size!==types.length||!types.includes(c.type))return 'Thiếu loại được giao hoặc trùng loại';
+ for(const row of activeRows(c,d)){
+  if(!DATA.semantic_types.includes(row.type)||!['confirmed','rejected'].includes(row.verdict))return 'Chưa chọn verdict cho từng loại';
+  if(typeof row.reviewer!=='string'||!row.reviewer.trim())return 'Thiếu tên người review';
+  if(typeof row.note!=='string'||[...row.note.trim()].length<20)return 'Ghi chú cần ít nhất 20 ký tự';
+ }
+ return '';
+}
+function complete(c){return !invalid(c,decision(c));}
+function filtered(){return DATA.candidates.filter(c=>c.image.includes($('imageFilter').value.trim())&&(!$('typeFilter').value||c.type===$('typeFilter').value)&&(!$('statusFilter').value||complete(c)===($('statusFilter').value==='done')));}
+function updateProgress(){const done=DATA.candidates.filter(complete).length;$('progress').textContent=`${done}/${scope.length} ứng viên xong · ${new Set(DATA.candidates.map(c=>c.image)).size} ảnh`;}
+function options(){
+ const list=filtered(),select=$('candidate');select.replaceChildren();
+ for(const c of list){const o=new Option(`${complete(c)?'✓':'○'} ${c.image} · ${c.type}`,c.id);select.add(o);}
+ if(!list.some(c=>c.id===currentId))currentId=list[0]?.id||null;
+ select.value=currentId||'';$('previous').disabled=!list.length||list[0].id===currentId;$('next').disabled=!list.length||list.at(-1).id===currentId;updateProgress();
+}
+function svg(tag,attrs,parent){const el=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,String(v));parent.appendChild(el);return el;}
+function renderImage(c){
+ const a=DATA.assets[c.image],drawing=$('drawing');drawing.replaceChildren();drawing.setAttribute('viewBox',`0 0 ${a.width} ${a.height}`);
+ if(a.error){message(a.error);return;}
+ const img=svg('image',{href:a.image_data,width:a.width,height:a.height},drawing);
+ img.addEventListener('error',()=>{a.error='Trình duyệt không mở được ảnh; cần xử lý ảnh trước khi kết luận';message(a.error);$('reviewed').disabled=true;updateProgress();});
+ const wanted=new Set(c.evidence.map(e=>e.segment.id));
+ if($('showMask').checked)for(const s of a.segments.filter(s=>wanted.has(s.id))){
+  svg('path',{d:s.path,fill:'#ff9c38','fill-opacity':.42},drawing);
+  const [x,y]=s.bbox_xyxy;svg('text',{x,y:Math.max(14,y-4),fill:'#ffc376'},drawing).textContent=`P ${s.id}: ${s.class_name}`;
+ }
+ if($('showBoxes').checked)for(const b of a.boxes){const [x,y,x1,y1]=b.bbox_xyxy;
+  svg('rect',{x,y,width:x1-x,height:y1-y,fill:'none',stroke:'#42f5bd','stroke-width':1.5},drawing);
+  svg('text',{x,y:Math.min(a.height-4,Math.max(14,y+14)),fill:'#67ffd1'},drawing).textContent=`D${b.row}: ${b.class_name}`;
+ }
+ resize();
+}
+function resize(){const c=candidateMap.get(currentId);if(!c)return;const a=DATA.assets[c.image],scale=Number($('zoom').value)/100;$('drawing').style.width=`${a.width*scale}px`;$('drawing').style.height=`${a.height*scale}px`;}
+function mark(c,d){decisions[c.id]=d;dirty=true;submitted=false;updateProgress();const o=[...$('candidate').options].find(o=>o.value===c.id);if(o)o.textContent=`${complete(c)?'✓':'○'} ${c.image} · ${c.type}`;if(live&&!saveBlocked){clearTimeout(saveTimer);saveTimer=setTimeout(saveToServer,500);}}
+function renderRows(c,d){
+ $('decisions').replaceChildren();
+ for(const row of activeRows(c,d)){const wrap=document.createElement('div');wrap.className='decision';
+  const bar=document.createElement('div');bar.className='bar';const title=document.createElement('strong');title.textContent=row.type;
+  const verdict=document.createElement('select');verdict.setAttribute('aria-label',`Verdict ${row.type}`);
+  verdict.add(new Option('Chưa kết luận',''));verdict.add(new Option('confirmed — Có lỗi này','confirmed'));verdict.add(new Option('rejected — Không có lỗi này','rejected'));verdict.value=row.verdict;
+  verdict.addEventListener('change',()=>{row.verdict=verdict.value;row.reviewer=$('reviewer').value.trim();mark(c,d);});bar.append(title,verdict);wrap.append(bar);
+  const note=document.createElement('textarea');note.setAttribute('aria-label',`Ghi chú ${row.type}`);note.placeholder='Thấy vật gì, ở đâu; nhãn nào sai hoặc vì sao lệch tự nhiên?';note.value=row.note;
+  const who=document.createElement('p');who.className='small muted';who.textContent=`Người ghi: ${row.reviewer||'chưa có'}`;
+  note.addEventListener('input',()=>{row.note=note.value;row.reviewer=$('reviewer').value.trim();who.textContent=`Người ghi: ${row.reviewer||'chưa có'}`;mark(c,d);});wrap.append(note,who);
+  if(row.type!==c.type){const remove=document.createElement('button');remove.textContent='Bỏ loại thêm';remove.onclick=()=>{d.rows=d.rows.filter(r=>r!==row);mark(c,d);renderRows(c,d);};wrap.append(remove);}
+  $('decisions').append(wrap);
+ }
+}
+function render(){
+ options();const c=candidateMap.get(currentId);$('decisions').replaceChildren();$('evidence').replaceChildren();$('drawing').replaceChildren();message('');
+ $('addType').disabled=!c;
+ if(!c){$('heading').textContent=scope.length?'Không có ứng viên theo bộ lọc':'Không có ứng viên';$('reason').textContent='';$('reviewed').checked=false;$('reviewed').disabled=true;return;}
+ $('heading').textContent=`${c.image} · ${c.type}`;$('reason').textContent=c.reason;
+ const assessment=DATA.triage?.[c.id];$('assessment').hidden=!assessment;
+ if(assessment)$('assessment').textContent=`Máy phân luồng: ${assessment.lane}; phụ trách phù hợp: ${assessment.recommended_owner}. ${assessment.reasons.join(', ')}.${assessment.machine_proposal?' Đề xuất máy: '+assessment.machine_proposal.type+' — '+assessment.machine_proposal.assessment+' (chưa được người xem xác nhận).':''}`;
+ const d=decision(c);$('reviewed').checked=d.reviewed;$('reviewed').disabled=!!DATA.assets[c.image].error;
+ for(const e of c.evidence){const p=document.createElement('p');p.textContent=`Segment ${e.segment.id}: ${e.segment.class_name}, ${e.segment.mask_pixels} pixel. Detection gần nhất: ${e.detection?`D${e.detection.row} ${e.detection.class_name}`:'không có'}. IoU ${e.bbox_iou.toFixed(3)}; mask trong box ${(e.mask_coverage*100).toFixed(1)}%.`; $('evidence').append(p);}
+ renderImage(c);renderRows(c,d);
+ $('reviewed').onchange=()=>{d.reviewed=$('reviewed').checked;mark(c,d);};
+ $('addType').onclick=()=>{const type=$('extraType').value;const existing=d.rows.find(r=>r.type===type);if(existing)existing.explicit=true;else d.rows.push({type,verdict:'',note:'',reviewer:'',explicit:true});mark(c,d);renderRows(c,d);};
+}
+function progress(){return {schema_version:1,release_id:DATA.release_id,fingerprint:DATA.fingerprint,scope,reviewer:$('reviewer').value.trim(),decisions,revision:serverRevision,submitted};}
+function download(name,text,type){const url=URL.createObjectURL(new Blob([text],{type}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function csvText(){
+ const grouped=new Map();
+ for(const c of DATA.candidates){const d=decision(c),error=invalid(c,d);if(error)throw Error(`${c.id}: ${error}`);
+  for(const row of activeRows(c,d)){const key=JSON.stringify([c.image,row.type]),note=`Reviewer: ${row.reviewer.trim()}; ${row.note.trim()}`;
+   if(grouped.has(key)){const old=grouped.get(key);if(old[2]!==row.verdict)throw Error(`Xung đột verdict: ${c.image}, ${row.type}`);if(old[3]!==note)old[3]+=' | '+note;}
+   else grouped.set(key,[c.image,row.type,row.verdict,note]);
+  }
+ }
+ const quote=value=>'"'+String(value).replaceAll('"','""')+'"';
+ const rows=[...grouped.values()];
+ if(rows.length&&new Set(rows.map(row=>row[3])).size<.7*rows.length)throw Error('Quá nhiều ghi chú giống nhau; cần quan sát riêng cho từng ảnh/loại.');
+ return 'image,type,verdict,note\n'+rows.sort((a,b)=>a[0].localeCompare(b[0])||a[1].localeCompare(b[1])).map(row=>row.map(quote).join(',')).join('\n')+(grouped.size?'\n':'');
+}
+$('release').textContent=`Release ${DATA.release_id} · Chỉ xem ảnh, ghi nhận đánh giá`;
+for(const type of [...new Set(DATA.candidates.map(c=>c.type))].sort())$('typeFilter').add(new Option(type,type));
+for(const type of DATA.semantic_types)$('extraType').add(new Option(type,type));
+for(const id of ['imageFilter','typeFilter','statusFilter'])$(id).addEventListener(id==='imageFilter'?'input':'change',render);
+$('candidate').onchange=()=>{currentId=$('candidate').value;render();};
+for(const [id,delta]of [['previous',-1],['next',1]])$(id).onclick=()=>{const list=filtered(),index=list.findIndex(c=>c.id===currentId);if(list[index+delta]){currentId=list[index+delta].id;render();}};
+for(const id of ['showBoxes','showMask'])$(id).onchange=()=>{const c=candidateMap.get(currentId);if(c)renderImage(c);};
+$('zoom').oninput=resize;$('fit').onclick=()=>{const c=candidateMap.get(currentId);if(c){const a=DATA.assets[c.image];$('zoom').value=Math.max(25,Math.min(400,Math.floor(($('viewport').clientWidth/a.width)*4)*25));resize();}};
+$('exportProgress').onclick=()=>{download('review_progress.json',JSON.stringify(progress(),null,2),'application/json;charset=utf-8');dirty=false;message('Đã yêu cầu tải progress JSON. Kiểm tra file trong Downloads và lưu vào thư mục run.');};
+function restoreProgress(incoming){
+ if(incoming.schema_version!==1||incoming.release_id!==DATA.release_id||incoming.fingerprint!==DATA.fingerprint||!Array.isArray(incoming.scope)||JSON.stringify([...incoming.scope].sort())!==JSON.stringify([...scope].sort()))throw Error('Progress không thuộc đúng release, cấu hình hoặc phần được giao.');
+ if(!incoming.decisions||typeof incoming.decisions!=='object'||Array.isArray(incoming.decisions))throw Error('Dữ liệu decisions không hợp lệ');
+ for(const [id,d]of Object.entries(incoming.decisions)){
+  const c=candidateMap.get(id);if(!c||typeof d?.reviewed!=='boolean'||!Array.isArray(d.rows)||!d.rows.length)throw Error('Ứng viên không hợp lệ trong progress');
+  if(d.rows.some(r=>!r||!DATA.semantic_types.includes(r.type)||!['','confirmed','rejected'].includes(r.verdict)||typeof r.note!=='string'||typeof r.reviewer!=='string'))throw Error('Dòng review không hợp lệ');
+  const types=d.rows.map(r=>r.type);if(new Set(types).size!==types.length||!types.includes(c.type))throw Error('Thiếu loại được giao hoặc trùng loại');
+  if(decisions[id]&&JSON.stringify(decisions[id])!==JSON.stringify(d))throw Error(`Có thay đổi xung đột ở ${id}. Lưu bản hiện tại trước; nạp bản muốn dùng trong tab mới.`);
+ }
+ const hasUnsavedLocal=dirty&&Object.keys(decisions).some(id=>!Object.hasOwn(incoming.decisions,id));
+ decisions={...decisions,...incoming.decisions};if(!$('reviewer').value)$('reviewer').value=incoming.reviewer||'';serverRevision=incoming.revision||0;submitted=incoming.submitted===true;dirty=hasUnsavedLocal;render();message('Đã nạp progress. Kiểm tra đúng tên người review trước khi sửa.');
+}
+$('importProgress').onchange=async()=>{try{
+ const file=$('importProgress').files[0];if(!file)return;restoreProgress(JSON.parse(await file.text()));
+ if(live){dirty=true;submitted=false;await saveToServer();}
+ }catch(error){message(error.message);}finally{$('importProgress').value='';}};
+$('exportCsv').onclick=()=>{try{const csv=csvText();download('review_log.csv',csv,'text/csv;charset=utf-8');message('Đã yêu cầu tải CSV cho phần này. Lưu cả progress JSON để tổng hợp và kiểm tra toàn bộ hàng đợi.');}catch(error){message(error.message);}};
+window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+async function saveToServer(){
+ if(!live||saveBlocked)return;
+ if(saving){saveAgain=true;return;}
+ saving=true;const snapshot=JSON.stringify(progress());
+ try{
+  const response=await fetch(DATA.persistence.endpoint,{method:'POST',headers:{'Content-Type':'application/json','X-Review-Token':DATA.persistence.token},body:snapshot});
+  const result=await response.json();if(!response.ok){if(response.status===409)saveBlocked=true;throw Error(result.error||'Không lưu được progress');}
+  serverRevision=result.revision;
+  if(JSON.stringify(decisions)===JSON.stringify(JSON.parse(snapshot).decisions)&&submitted===JSON.parse(snapshot).submitted)dirty=false;
+  message(result.status.state==='complete'?'Đã hoàn tất toàn bộ hàng đợi: review_log.csv, errors.json và report đã được tạo.':`Đã tự lưu vào repo (bản ${serverRevision}). ${result.status.detail||''}`);
+ }catch(error){message(`${error.message}. Lưu progress JSON dự phòng trước khi đóng tab.`);}
+ finally{saving=false;if(saveAgain&&!saveBlocked){saveAgain=false;await saveToServer();}}
+}
+$('saveServer').onclick=()=>{clearTimeout(saveTimer);saveToServer();};
+$('finishServer').onclick=()=>{try{csvText();submitted=true;dirty=true;clearTimeout(saveTimer);saveToServer();}catch(error){message(error.message);}};
+render();
+if(live){
+ $('storageNotice').textContent='Chế độ local: tự lưu progress vào repo sau khi sửa. Khi xem xong, bấm Hoàn tất phần này; hệ thống tổng hợp sau khi đủ các phần. Không cần tải/copy JSON thủ công.';
+ fetch(DATA.persistence.endpoint).then(async response=>{const value=await response.json();if(!response.ok)throw Error(value.error);if(value.progress)restoreProgress(value.progress);$('saveServer').disabled=false;$('finishServer').disabled=false;}).catch(error=>{saveBlocked=true;message(`${error.message}. Lưu JSON dự phòng và xử lý progress cũ trước khi tiếp tục.`);});
+}
+</script>
+</html>
