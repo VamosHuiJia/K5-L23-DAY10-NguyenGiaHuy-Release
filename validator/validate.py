@@ -10,7 +10,8 @@ import json
 import math
 import sys
 import zlib
-from collections import defaultdict
+from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
@@ -115,7 +116,7 @@ def calculate_segment_coverage(segment_pixels: int, pixels_inside_box: int) -> f
 
 def find_bbox_drift_candidate(
     image: str,
-    pixels: bytes | bytearray,
+    pixels: bytes | bytearray | None,
     image_width: int,
     image_height: int,
     segment_id: int,
@@ -125,6 +126,7 @@ def find_bbox_drift_candidate(
     min_segment_pixels: int,
     box_index: int | None = None,
     iscrowd: bool = False,
+    mask_measurements: tuple[int, int] | None = None,
 ) -> dict | None:
     """Suggest bbox_drift for one already matched, same-class box/segment pair.
 
@@ -132,6 +134,8 @@ def find_bbox_drift_candidate(
     from pngutil.read_rgb() and a box in pixel XYXY coordinates. Thresholds
     must be chosen and checked on the clean lot; no seed-specific defaults
     are assumed here. A returned candidate still requires human image review.
+    mask_measurements may supply (total_pixels, inside_pixels) measured from
+    mask spans by DeliveryReader, avoiding repeated full-mask decoding.
     """
     if not math.isfinite(coverage_threshold) or not 0 < coverage_threshold <= 1:
         raise ValueError("Coverage threshold must be greater than 0 and at most 1")
@@ -146,10 +150,15 @@ def find_bbox_drift_candidate(
     if iscrowd or segment_id == 0 or right <= left or bottom <= top:
         return None
 
-    pixels_inside = count_segment_pixels_in_box(
-        pixels, image_width, image_height, segment_id, box_xyxy,
-    )
-    total_pixels = count_segment_pixels(pixels).get(segment_id, 0)
+    if mask_measurements is None:
+        if pixels is None:
+            raise ValueError("Provide RGB mask pixels or measured mask counts")
+        pixels_inside = count_segment_pixels_in_box(
+            pixels, image_width, image_height, segment_id, box_xyxy,
+        )
+        total_pixels = count_segment_pixels(pixels).get(segment_id, 0)
+    else:
+        total_pixels, pixels_inside = mask_measurements
     if total_pixels < min_segment_pixels:
         return None
 
@@ -174,7 +183,7 @@ def find_bbox_drift_candidate(
 
 def find_instance_merge_candidate(
     image: str,
-    pixels: bytes | bytearray,
+    pixels: bytes | bytearray | None,
     image_width: int,
     image_height: int,
     segment_id: int,
@@ -187,6 +196,7 @@ def find_instance_merge_candidate(
     min_segment_pixels: int,
     box_indices: tuple[int, int] | None = None,
     iscrowd: bool = False,
+    mask_measurements: tuple[int, int, int, int] | None = None,
 ) -> dict | None:
     """Suggest instance_merge for one segment and two same-class detections.
 
@@ -195,6 +205,8 @@ def find_instance_merge_candidate(
     share of the segment. Intersection pixels are counted once in the union,
     so repeated or nested boxes do not create artificial merge evidence.
     Thresholds need clean-lot calibration; candidates require human review.
+    mask_measurements may supply (total, first, second, shared) pixel counts
+    measured from mask spans, instead of decoding the same mask repeatedly.
     """
     if not math.isfinite(min_segment_fraction) or not 0 < min_segment_fraction <= 0.5:
         raise ValueError("Minimum segment fraction must be greater than 0 and at most 0.5")
@@ -236,16 +248,21 @@ def find_instance_merge_candidate(
     if box_iou > max_box_iou:
         return None
 
-    first_pixels = count_segment_pixels_in_box(
-        pixels, image_width, image_height, segment_id, first,
-    )
-    second_pixels = count_segment_pixels_in_box(
-        pixels, image_width, image_height, segment_id, second,
-    )
-    shared_pixels = count_segment_pixels_in_box(
-        pixels, image_width, image_height, segment_id, intersection,
-    )
-    total_pixels = count_segment_pixels(pixels).get(segment_id, 0)
+    if mask_measurements is None:
+        if pixels is None:
+            raise ValueError("Provide RGB mask pixels or measured mask counts")
+        first_pixels = count_segment_pixels_in_box(
+            pixels, image_width, image_height, segment_id, first,
+        )
+        second_pixels = count_segment_pixels_in_box(
+            pixels, image_width, image_height, segment_id, second,
+        )
+        shared_pixels = count_segment_pixels_in_box(
+            pixels, image_width, image_height, segment_id, intersection,
+        )
+        total_pixels = count_segment_pixels(pixels).get(segment_id, 0)
+    else:
+        total_pixels, first_pixels, second_pixels, shared_pixels = mask_measurements
     if total_pixels < min_segment_pixels:
         return None
 
@@ -277,6 +294,455 @@ def find_instance_merge_candidate(
     if box_indices is not None:
         candidate["box_indices"] = list(box_indices)
     return candidate
+
+
+# Detection/panoptic matching API integrated from Dang's commit e8de233.
+@dataclass(frozen=True)
+class Thresholds:
+    match_iou: float = 0.50
+    mask_coverage: float = 0.85
+    min_area_ratio: float = 0.25
+    max_area_ratio: float = 4.0
+    min_segment_pixels: int = 128
+    min_segment_area_ratio: float = 0.0005
+    min_bbox_extent: int = 8
+
+
+def read_json(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def delivery_path(delivery: Path, relative: str) -> Path:
+    root = delivery.resolve()
+    result = (root / relative).resolve()
+    if not result.is_relative_to(root):
+        raise ValueError(f"Path escapes delivery: {relative!r}")
+    return result
+
+
+def output_path(delivery: Path, output: Path) -> Path:
+    """Refuse to write generated files anywhere in the original delivery."""
+    output = output.resolve()
+    if output.is_relative_to(delivery.resolve()):
+        raise ValueError("Output must be outside the read-only delivery")
+    return output
+
+
+def load_classes(delivery: Path) -> dict[int, str]:
+    classes = {}
+    for line in (delivery / "classes.txt").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            number, name = line.strip().split(maxsplit=1)
+            classes[int(number)] = name.strip()
+    return classes
+
+
+def load_boxes(path: Path, width: int, height: int, classes: dict,
+               diagnostics: list, image: str) -> list[dict]:
+    boxes = []
+    for index, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            fields = line.split()
+            if len(fields) != 5:
+                raise ValueError("expected five YOLO fields")
+            raw_class, x, y, w, h = map(float, fields)
+            if (not all(map(math.isfinite, (raw_class, x, y, w, h)))
+                    or not raw_class.is_integer() or int(raw_class) not in classes
+                    or w <= 0 or h <= 0):
+                raise ValueError("invalid class or box geometry")
+        except ValueError as exc:
+            diagnostics.append({"image": image, "reason": f"label row {index}: {exc}"})
+            continue
+        boxes.append({"row": index, "class_id": int(raw_class),
+                      "class_name": classes[int(raw_class)],
+                      "bbox_xyxy": [(x-w/2)*width, (y-h/2)*height,
+                                    (x+w/2)*width, (y+h/2)*height]})
+    return boxes
+
+
+def mask_spans(width: int, height: int, pixels: bytes,
+               wanted: set[int]) -> dict[int, list[list[int]]]:
+    """Runs [y, left, right-exclusive], usable for coverage and SVG overlays."""
+    if len(pixels) != width * height * 3:
+        raise ValueError("mask pixel buffer size does not match dimensions")
+    runs = defaultdict(list)
+    for y in range(height):
+        previous, start = 0, 0
+        for x in range(width):
+            sid = pngutil.segment_id(pixels, (y * width + x) * 3)
+            if sid != previous:
+                if previous in wanted:
+                    runs[previous].append([y, start, x])
+                previous, start = sid, x
+        if previous in wanted:
+            runs[previous].append([y, start, width])
+    return dict(runs)
+
+
+def bbox_area(box: list) -> float:
+    return max(0, box[2]-box[0]) * max(0, box[3]-box[1])
+
+
+def bbox_iou(a: list, b: list) -> float:
+    intersection = max(0, min(a[2], b[2])-max(a[0], b[0])) * max(0, min(a[3], b[3])-max(a[1], b[1]))
+    union = bbox_area(a) + bbox_area(b) - intersection
+    return intersection / union if union else 0.0
+
+
+def coverage(spans: list, box: list, area: int) -> float:
+    # Count pixel centers in a half-open rectangle; do not round box coordinates
+    # differently between mask measurements and the displayed detection box.
+    left, top, right, bottom = (math.ceil(v - 0.5) for v in box)
+    inside = sum(max(0, min(x1, right)-max(x0, left))
+                 for y, x0, x1 in spans if top <= y < bottom)
+    return inside / area if area else 0.0
+
+
+@dataclass
+class Comparison:
+    image: str
+    width: int
+    height: int
+    boxes: list[dict]
+    segments: list[dict]
+    spans: dict[int, list]
+    pairs: dict[int, list[dict]]
+    image_available: bool
+
+
+class DeliveryReader:
+    def __init__(self, delivery: Path):
+        self.delivery = delivery.resolve()
+        self.manifest = read_json(delivery / "manifest.json")["items"]
+        self.panoptic = read_json(delivery / "panoptic.json")
+        self.classes = load_classes(delivery)
+        self.categories = {int(c["id"]): c for c in self.panoptic["categories"]}
+        self.images = {Path(i["file_name"]).stem: i for i in self.panoptic["images"]}
+        self.annotations = {a["image_id"]: a for a in self.panoptic["annotations"]}
+        self.diagnostics: list[dict] = []
+
+    def compare(self, image: str, *, include_all_segments: bool = False) -> Comparison | None:
+        """Pixel evidence; default keeps the existing candidate behavior.
+
+        include_all_segments retains crowd and stuff metadata for integration.
+        The caller must filter these before ordinary instance matching.
+        """
+        item = self.manifest[image]
+        try:
+            info = self.images[image]
+            width, height = int(info["width"]), int(info["height"])
+            if width <= 0 or height <= 0:
+                raise ValueError("non-positive image dimensions")
+            annotation = self.annotations[info["id"]]
+            boxes = load_boxes(delivery_path(self.delivery, item["label"]), width, height,
+                               self.classes, self.diagnostics, image)
+            mask_width, mask_height, pixels = pngutil.read_rgb(delivery_path(self.delivery, item["mask"]))
+            if (width, height) != (mask_width, mask_height):
+                raise ValueError("image and mask dimensions disagree")
+            segments = []
+            for raw in annotation["segments_info"]:
+                category = self.categories.get(raw.get("category_id"))
+                if category is None:
+                    self.diagnostics.append({"image": image, "reason": f"unknown category for segment {raw.get('id')}"})
+                    continue
+                if not include_all_segments and (not category.get("isthing") or raw.get("iscrowd", 0)):
+                    continue
+                try:
+                    x, y, w, h = map(float, raw["bbox"])
+                    sid = int(raw["id"])
+                    if sid <= 0 or w <= 0 or h <= 0 or not all(map(math.isfinite, (x,y,w,h))):
+                        raise ValueError("invalid segment geometry")
+                except (ValueError, KeyError, TypeError):
+                    self.diagnostics.append({"image": image, "reason": "invalid segment geometry"})
+                    continue
+                segments.append({"id": sid, "category_id": category["id"],
+                                 "class_name": category["name"],
+                                 "bbox_xyxy": [x, y, x+w, y+h]})
+                if include_all_segments:
+                    segments[-1].update(iscrowd=int(raw.get("iscrowd", 0)),
+                                        isthing=int(category.get("isthing", 0)))
+            spans = mask_spans(width, height, pixels, {s["id"] for s in segments})
+            pairs = {}
+            for segment in segments:
+                runs = spans.get(segment["id"], [])
+                area = sum(x1-x0 for _, x0, x1 in runs)
+                segment["mask_pixels"] = area
+                if not area:
+                    self.diagnostics.append({"image": image, "reason": f"segment {segment['id']} has no mask pixels"})
+                measurements = []
+                for box in boxes:
+                    ratio = bbox_area(box["bbox_xyxy"]) / bbox_area(segment["bbox_xyxy"])
+                    measurements.append({"detection": box, "bbox_iou": bbox_iou(box["bbox_xyxy"], segment["bbox_xyxy"]),
+                                         "mask_coverage": coverage(runs, box["bbox_xyxy"], area),
+                                         "area_ratio": ratio})
+                pairs[segment["id"]] = sorted(measurements, key=lambda p: (-p["bbox_iou"], -p["mask_coverage"], p["detection"]["row"]))
+            available = delivery_path(self.delivery, item["image"]).is_file()
+            if not available:
+                self.diagnostics.append({"image": image, "reason": "image unavailable: human review blocked"})
+            return Comparison(image, width, height, boxes, segments, spans, pairs, available)
+        except (OSError, ValueError, KeyError, TypeError, zlib.error, IndexError) as exc:
+            self.diagnostics.append({"image": image, "reason": f"comparison skipped: {exc}"})
+            return None
+
+    def match(self, image: str, config: Thresholds | None = None) -> dict | None:
+        """Return a JSON-ready basic matching contract for drift/merge callers.
+
+        ``pairs`` retains every box/segment measurement, including zero overlap.
+        ``matches`` selects spatial matches to non-crowd things, independently
+        of class, without imposing a one-to-one assignment. No fault verdicts.
+        On unreadable inputs return None; inspect reader.diagnostics.
+        """
+        config = config or Thresholds()
+        comparison = self.compare(image, include_all_segments=True)
+        if comparison is None:
+            return None
+        segments = sorted(comparison.segments, key=lambda segment: segment["id"])
+        pairs = []
+        for segment in segments:
+            eligible = segment["isthing"] == 1 and segment["iscrowd"] == 0 and segment["mask_pixels"] > 0
+            for measurement in comparison.pairs[segment["id"]]:
+                pairs.append({"box_row": measurement["detection"]["row"],
+                              "segment_id": segment["id"],
+                              "bbox_iou": measurement["bbox_iou"],
+                              "mask_coverage": measurement["mask_coverage"],
+                              "area_ratio": measurement["area_ratio"],
+                              "same_class": measurement["detection"]["class_name"] == segment["class_name"],
+                              "eligible_for_matching": eligible,
+                              "matched": eligible and strong_match(measurement, config)})
+        pairs.sort(key=lambda pair: (pair["box_row"], pair["segment_id"]))
+        matches = [pair.copy() for pair in pairs if pair["matched"]]
+        matched_boxes = {pair["box_row"] for pair in matches}
+        matched_segments = {pair["segment_id"] for pair in matches}
+        return {"schema_version": 1, "image": image,
+                "file_name": Path(self.manifest[image]["image"]).name,
+                "width": comparison.width, "height": comparison.height,
+                "image_available": comparison.image_available,
+                "matching_config": asdict(config),
+                "boxes": comparison.boxes, "segments": segments,
+                "pairs": pairs, "matches": matches,
+                "unmatched_box_rows": [box["row"] for box in comparison.boxes if box["row"] not in matched_boxes],
+                "unmatched_segment_ids": [segment["id"] for segment in segments
+                                          if segment["isthing"] == 1 and segment["iscrowd"] == 0
+                                          and segment["id"] not in matched_segments]}
+
+
+def strong_match(pair: dict, config: Thresholds) -> bool:
+    return (pair["bbox_iou"] >= config.match_iou or
+            (pair["mask_coverage"] >= config.mask_coverage and
+             config.min_area_ratio <= pair["area_ratio"] <= config.max_area_ratio))
+
+
+def propose(comparison: Comparison, config: Thresholds) -> list[dict]:
+    grouped: dict[str, list] = defaultdict(list)
+    for segment in comparison.segments:
+        if not segment["mask_pixels"]:
+            continue
+        pairs = comparison.pairs[segment["id"]]
+        strong = [p for p in pairs if strong_match(p, config)]
+        same = [p for p in strong if p["detection"]["class_name"] == segment["class_name"]]
+        if same:
+            continue
+        if strong:
+            kind, selected = "class_swap", strong[0]
+        else:
+            x0, y0, x1, y1 = segment["bbox_xyxy"]
+            minimum = max(config.min_segment_pixels, config.min_segment_area_ratio * comparison.width * comparison.height)
+            if segment["mask_pixels"] < minimum or min(x1-x0, y1-y0) < config.min_bbox_extent:
+                continue
+            kind, selected = "missing_box", pairs[0] if pairs else None
+        grouped[kind].append({"segment": segment, "detection": selected["detection"] if selected else None,
+                              "bbox_iou": selected["bbox_iou"] if selected else 0.0,
+                              "mask_coverage": selected["mask_coverage"] if selected else 0.0,
+                              "nearest_boxes": pairs[:3]})
+    return [{"id": f"{comparison.image}:{kind}", "image": comparison.image, "type": kind,
+             "possible_types": ["class_swap", "category_swap"] if kind == "class_swap" else [kind],
+             "reason": "Strong spatial match but class names disagree; inspect both sources."
+             if kind == "class_swap" else "Significant thing segment has no strong detection match; inspect nearby boxes.",
+             "image_available": comparison.image_available,
+             "evidence": sorted(evidence, key=lambda e: e["segment"]["id"])}
+            for kind, evidence in sorted(grouped.items())]
+
+
+@dataclass(frozen=True)
+class MaskThresholds:
+    """Starting thresholds; measure clean-lot noise before choosing final values."""
+    drift_coverage: float = 0.90
+    merge_min_fraction: float = 0.15
+    merge_coverage: float = 0.85
+    merge_max_iou: float = 0.30
+    association_distance: float = 1.0
+
+    def __post_init__(self):
+        if not math.isfinite(self.drift_coverage) or not 0 < self.drift_coverage <= 1:
+            raise ValueError("Drift coverage must be in (0, 1]")
+        if not math.isfinite(self.merge_min_fraction) or not 0 < self.merge_min_fraction <= 0.5:
+            raise ValueError("Merge minimum fraction must be in (0, 0.5]")
+        if not math.isfinite(self.merge_coverage) or not 0 < self.merge_coverage <= 1:
+            raise ValueError("Merge coverage must be in (0, 1]")
+        if not math.isfinite(self.merge_max_iou) or not 0 <= self.merge_max_iou < 1:
+            raise ValueError("Merge maximum IoU must be in [0, 1)")
+        if not math.isfinite(self.association_distance) or self.association_distance <= 0:
+            raise ValueError("Association distance must be positive")
+
+
+def propose_mask_candidates(
+    comparison: Comparison, config: Thresholds, mask_config: MaskThresholds,
+) -> list[dict]:
+    """Use all API pairs, including unmatched pairs, to suggest drift/merge.
+
+    YOLO row numbers stay one-based. Mask spans retain the exact half-open
+    pixel-center convention of the original matching API. No label is edited.
+    """
+    minimum = max(config.min_segment_pixels,
+                  config.min_segment_area_ratio * comparison.width * comparison.height)
+    segments = [segment for segment in comparison.segments
+                if segment.get("isthing") == 1 and not segment.get("iscrowd")
+                and segment["mask_pixels"] >= minimum
+                and min(segment["bbox_xyxy"][2] - segment["bbox_xyxy"][0],
+                        segment["bbox_xyxy"][3] - segment["bbox_xyxy"][1]) >= config.min_bbox_extent]
+    grouped = defaultdict(list)
+    box_pairs = defaultdict(list)
+    merge_members = set()
+
+    def center_distance(box, segment):
+        a, b = box["bbox_xyxy"], segment["bbox_xyxy"]
+        distance = math.hypot((a[0] + a[2] - b[0] - b[2]) / 2,
+                              (a[1] + a[3] - b[1] - b[3]) / 2)
+        scale = max(math.hypot(a[2] - a[0], a[3] - a[1]),
+                    math.hypot(b[2] - b[0], b[3] - b[1]), 1.0)
+        return distance / scale
+
+    for segment in segments:
+        sid, area = segment["id"], segment["mask_pixels"]
+        pairs = comparison.pairs[sid]
+        same_class = []
+        for pair in pairs:
+            box_pairs[pair["detection"]["row"]].append((segment, pair))
+            if (pair["detection"]["class_name"] == segment["class_name"]
+                    and pair["mask_coverage"] >= mask_config.merge_min_fraction):
+                same_class.append(pair)
+
+        for index, first in enumerate(same_class):
+            for second in same_class[index + 1:]:
+                first_box, second_box = first["detection"], second["detection"]
+                a, b = first_box["bbox_xyxy"], second_box["bbox_xyxy"]
+                intersection = (max(a[0], b[0]), max(a[1], b[1]),
+                                min(a[2], b[2]), min(a[3], b[3]))
+                shared = round(coverage(comparison.spans.get(sid, []), intersection, area) * area)
+                candidate = find_instance_merge_candidate(
+                    comparison.image, None, comparison.width, comparison.height,
+                    sid, a, b,
+                    min_segment_fraction=mask_config.merge_min_fraction,
+                    min_combined_coverage=mask_config.merge_coverage,
+                    max_box_iou=mask_config.merge_max_iou,
+                    min_segment_pixels=math.ceil(minimum),
+                    box_indices=(first_box["row"], second_box["row"]),
+                    mask_measurements=(area, round(first["mask_coverage"] * area),
+                                       round(second["mask_coverage"] * area), shared),
+                )
+                if candidate is None:
+                    continue
+                candidate["box_rows"] = candidate.pop("box_indices")
+                grouped["instance_merge"].append({
+                    "segment": segment, "detections": [first_box, second_box],
+                    "measurements": candidate,
+                })
+                merge_members.update(((first_box["row"], sid), (second_box["row"], sid)))
+
+    for row, measurements in sorted(box_pairs.items()):
+        def rank(entry):
+            segment, pair = entry
+            return (strong_match(pair, config), pair["bbox_iou"], pair["mask_coverage"],
+                    -center_distance(pair["detection"], segment))
+
+        same_class = [(segment, pair) for segment, pair in measurements
+                      if pair["detection"]["class_name"] == segment["class_name"]
+                      and config.min_area_ratio <= pair["area_ratio"] <= config.max_area_ratio
+                      and center_distance(pair["detection"], segment) <= mask_config.association_distance]
+        if not same_class:
+            continue
+        segment, pair = max(same_class, key=rank)
+        strongest_segment, strongest_pair = max(measurements, key=rank)
+        if (strongest_pair["detection"]["class_name"] != strongest_segment["class_name"]
+                and strong_match(strongest_pair, config) and not strong_match(pair, config)):
+            continue  # Leave a strong class disagreement for the class-review queue.
+        if (row, segment["id"]) in merge_members:
+            continue
+        if not strong_match(pair, config):
+            # Do not borrow another object's segment just because its class
+            # matches. Keep unmatched pairs available when no stronger
+            # same-class box already accounts for that segment.
+            anchored_elsewhere = any(
+                other["detection"]["row"] != row
+                and other["detection"]["class_name"] == segment["class_name"]
+                and strong_match(other, config)
+                for other in comparison.pairs[segment["id"]]
+            )
+            if anchored_elsewhere:
+                continue
+
+        area = segment["mask_pixels"]
+        candidate = find_bbox_drift_candidate(
+            comparison.image, None, comparison.width, comparison.height,
+            segment["id"], pair["detection"]["bbox_xyxy"],
+            coverage_threshold=mask_config.drift_coverage,
+            min_segment_pixels=math.ceil(minimum), box_index=row,
+            mask_measurements=(area, round(pair["mask_coverage"] * area)),
+        )
+        if candidate is not None:
+            candidate["box_row"] = candidate.pop("box_index")
+            grouped["bbox_drift"].append({
+                "segment": segment, "detection": pair["detection"],
+                "bbox_iou": pair["bbox_iou"], "mask_coverage": pair["mask_coverage"],
+                "measurements": candidate,
+            })
+
+    reasons = {
+        "bbox_drift": "Box cùng lớp không bao phủ đủ pixel của segment; cần mở ảnh kiểm tra.",
+        "instance_merge": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+    }
+    return [{"id": f"{comparison.image}:{kind}", "image": comparison.image,
+             "type": kind, "possible_types": [kind], "reason": reasons[kind],
+             "image_available": comparison.image_available, "evidence": evidence}
+            for kind, evidence in sorted(grouped.items())]
+
+
+def generate_candidates(
+    delivery: Path, config: Thresholds | None = None,
+    mask_config: MaskThresholds | None = None,
+) -> dict:
+    """Combine class/missing-box evidence with drift/merge in one image pass."""
+    config = config or Thresholds()
+    mask_config = mask_config or MaskThresholds()
+    reader = DeliveryReader(delivery)
+    candidates = []
+    for image in sorted(reader.manifest):
+        comparison = reader.compare(image, include_all_segments=True)
+        if comparison is None or not comparison.image_available:
+            continue  # Diagnostics retain skipped inputs; these are not clean verdicts.
+        class_comparison = Comparison(
+            comparison.image, comparison.width, comparison.height, comparison.boxes,
+            [segment for segment in comparison.segments
+             if segment.get("isthing") == 1 and not segment.get("iscrowd")],
+            comparison.spans, comparison.pairs, comparison.image_available,
+        )
+        candidates.extend(propose(class_comparison, config))
+        candidates.extend(propose_mask_candidates(comparison, config, mask_config))
+
+    release_id = read_json(delivery / "release.json")["release_id"]
+    return {
+        "schema_version": 1, "release_id": release_id,
+        "config": asdict(config), "mask_config": asdict(mask_config),
+        "candidates": candidates, "diagnostics": reader.diagnostics,
+        "summary": {
+            "candidates": len(candidates),
+            "images": len({candidate["image"] for candidate in candidates}),
+            "by_type": dict(sorted(Counter(candidate["type"] for candidate in candidates).items())),
+            "diagnostics": len(reader.diagnostics),
+        },
+    }
 
 
 def _image_sizes(delivery: Path) -> dict[str, tuple[int, int]]:
@@ -561,11 +1027,35 @@ def main() -> int:
     parser.add_argument("delivery", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--candidates", type=Path)
+    parser.add_argument("--drift-coverage", type=float, default=0.90)
+    parser.add_argument("--merge-min-fraction", type=float, default=0.15)
+    parser.add_argument("--merge-coverage", type=float, default=0.85)
+    parser.add_argument("--merge-max-iou", type=float, default=0.30)
+    parser.add_argument("--association-distance", type=float, default=1.0)
+    parser.add_argument("--min-segment-pixels", type=int, default=128)
     args = parser.parse_args()
 
     delivery = args.delivery
     if not delivery.is_dir():
         parser.error(f"delivery không tồn tại: {delivery}")
+    try:
+        output_path(delivery, args.out)
+        if args.candidates:
+            output_path(delivery, args.candidates)
+            if args.out.resolve() == args.candidates.resolve():
+                raise ValueError("--out and --candidates must be different files")
+        if args.min_segment_pixels < 1:
+            raise ValueError("Minimum segment size must be at least one pixel")
+        matching_config = Thresholds(min_segment_pixels=args.min_segment_pixels)
+        mask_config = MaskThresholds(
+            drift_coverage=args.drift_coverage,
+            merge_min_fraction=args.merge_min_fraction,
+            merge_coverage=args.merge_coverage,
+            merge_max_iou=args.merge_max_iou,
+            association_distance=args.association_distance,
+        )
+    except ValueError as exc:
+        parser.error(str(exc))
 
     findings = []
     findings.extend(check_file_detection(delivery))
@@ -587,8 +1077,10 @@ def main() -> int:
     args.out.write_text(json.dumps(output, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     if args.candidates:
+        candidate_document = generate_candidates(delivery, matching_config, mask_config)
         args.candidates.parent.mkdir(parents=True, exist_ok=True)
-        args.candidates.write_text(json.dumps({"candidates": []}, indent=2) + "\n", encoding="utf-8")
+        args.candidates.write_text(json.dumps(candidate_document, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print(f"Ứng viên cần người xem: {json.dumps(candidate_document['summary'], ensure_ascii=False)}")
 
     print(f"Đã ghi {len(output['errors'])} lỗi luật vào {args.out}")
     return 0
