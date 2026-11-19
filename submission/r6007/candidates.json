@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "release_id": "lab250_5a8f63fb9dd0",
+  "config": {
+    "match_iou": 0.5,
+    "mask_coverage": 0.85,
+    "min_area_ratio": 0.25,
+    "max_area_ratio": 4.0,
+    "min_segment_pixels": 128,
+    "min_segment_area_ratio": 0.0005,
+    "min_bbox_extent": 8
+  },
+  "candidates": [
+    {
+      "id": "000000006460:class_swap",
+      "image": "000000006460",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 1973790,
+            "category_id": 1,
+            "class_name": "person",
+            "bbox_xyxy": [
+              281.0,
+              138.0,
+              332.0,
+              207.0
+            ],
+            "mask_pixels": 1804
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 24,
+            "class_name": "backpack",
+            "bbox_xyxy": [
+              277.44992,
+              137.6598895,
+              332.10015999999996,
+              207.22971850000002
+            ]
+          },
+          "bbox_iou": 0.925563580441005,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 24,
+                "class_name": "backpack",
+                "bbox_xyxy": [
+                  277.44992,
+                  137.6598895,
+                  332.10015999999996,
+                  207.22971850000002
+                ]
+              },
+              "bbox_iou": 0.925563580441005,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.0804228052313036
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 37,
+                "class_name": "surfboard",
+                "bbox_xyxy": [
+                  276.27008,
+                  138.5399365,
+                  285.88032000000004,
+                  230.8398295
+                ]
+              },
+              "bbox_iou": 0.0820515271684815,
+              "mask_coverage": 0.022172949002217297,
+              "area_ratio": 0.2520670996602225
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000007278:missing_box",
+      "image": "000000007278",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 12960199,
+            "category_id": 42,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              220.0,
+              58.0,
+              338.0,
+              119.0
+            ],
+            "mask_pixels": 3071
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 37,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              283.76992,
+              57.929893,
+              337.6496,
+              119.289939
+            ]
+          },
+          "bbox_iou": 0.4553801730584978,
+          "mask_coverage": 0.624226636274829,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 37,
+                "class_name": "surfboard",
+                "bbox_xyxy": [
+                  283.76992,
+                  57.929893,
+                  337.6496,
+                  119.289939
+                ]
+              },
+              "bbox_iou": 0.4553801730584978,
+              "mask_coverage": 0.624226636274829,
+              "area_ratio": 0.4593025344908698
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  189.78016,
+                  59.410115000000005,
+                  311.6304,
+                  154.300009
+                ]
+              },
+              "bbox_iou": 0.41054129932688244,
+              "mask_coverage": 0.5923152067730381,
+              "area_ratio": 1.6063290299353374
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000007888:missing_box",
+      "image": "000000007888",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 10987431,
+            "category_id": 85,
+            "class_name": "clock",
+            "bbox_xyxy": [
+              184.0,
+              243.0,
+              470.0,
+              417.0
+            ],
+            "mask_pixels": 24378
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 74,
+            "class_name": "clock",
+            "bbox_xyxy": [
+              319.080069,
+              242.77023999999997,
+              470.12975900000004,
+              403.43008
+            ]
+          },
+          "bbox_iou": 0.4859961602620935,
+          "mask_coverage": 0.578472393141357,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 74,
+                "class_name": "clock",
+                "bbox_xyxy": [
+                  319.080069,
+                  242.77023999999997,
+                  470.12975900000004,
+                  403.43008
+                ]
+              },
+              "bbox_iou": 0.4859961602620935,
+              "mask_coverage": 0.578472393141357,
+              "area_ratio": 0.4876541079384617
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 74,
+                "class_name": "clock",
+                "bbox_xyxy": [
+                  184.09011500000003,
+                  250.25024000000002,
+                  302.019949,
+                  417.08032000000003
+                ]
+              },
+              "bbox_iou": 0.3950853873976041,
+              "mask_coverage": 0.42152760685864304,
+              "area_ratio": 0.3953509291979487
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000009769:class_swap",
+      "image": "000000009769",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 5263205,
+            "category_id": 8,
+            "class_name": "truck",
+            "bbox_xyxy": [
+              85.0,
+              188.0,
+              464.0,
+              377.0
+            ],
+            "mask_pixels": 45883
+          },
+          "detection": {
+            "row": 5,
+            "class_id": 72,
+            "class_name": "refrigerator",
+            "bbox_xyxy": [
+              84.55008000000004,
+              187.84992,
+              463.83008000000007,
+              376.72992
+            ]
+          },
+          "bbox_iou": 0.9961508415643946,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 5,
+                "class_id": 72,
+                "class_name": "refrigerator",
+                "bbox_xyxy": [
+                  84.55008000000004,
+                  187.84992,
+                  463.83008000000007,
+                  376.72992
+                ]
+              },
+              "bbox_iou": 0.9961508415643946,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.000103396574109
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  139.50976,
+                  200.67983999999998,
+                  183.28959999999998,
+                  274.57008
+                ]
+              },
+              "bbox_iou": 0.045160655090136954,
+              "mask_coverage": 0.025891942549528146,
+              "area_ratio": 0.045160655090136954
+            },
+            {
+              "detection": {
+                "row": 4,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  252.28992,
+                  200.35008,
+                  300.49984,
+                  235.58016
+                ]
+              },
+              "bbox_iou": 0.023710953894174325,
+              "mask_coverage": 0.018394612383671512,
+              "area_ratio": 0.023710953894174325
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000019221:missing_box",
+      "image": "000000019221",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 4627337,
+            "category_id": 56,
+            "class_name": "broccoli",
+            "bbox_xyxy": [
+              85.0,
+              128.0,
+              449.0,
+              449.0
+            ],
+            "mask_pixels": 61860
+          },
+          "detection": {
+            "row": 1,
+            "class_id": 0,
+            "class_name": "person",
+            "bbox_xyxy": [
+              244.91008,
+              339.429951,
+              552.12032,
+              474.779953
+            ]
+          },
+          "bbox_iou": 0.16435167026557645,
+          "mask_coverage": 0.06752344002586486,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  244.91008,
+                  339.429951,
+                  552.12032,
+                  474.779953
+                ]
+              },
+              "bbox_iou": 0.16435167026557645,
+              "mask_coverage": 0.06752344002586486,
+              "area_ratio": 0.3558668532266994
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000020247:missing_box",
+      "image": "000000020247",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 3884370,
+            "category_id": 23,
+            "class_name": "bear",
+            "bbox_xyxy": [
+              1.0,
+              15.0,
+              86.0,
+              265.0
+            ],
+            "mask_pixels": 14137
+          },
+          "detection": {
+            "row": 1,
+            "class_id": 21,
+            "class_name": "bear",
+            "bbox_xyxy": [
+              333.21024,
+              176.14973600000002,
+              510.64,
+              439.19984999999997
+            ]
+          },
+          "bbox_iou": 0.0,
+          "mask_coverage": 0.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 21,
+                "class_name": "bear",
+                "bbox_xyxy": [
+                  333.21024,
+                  176.14973600000002,
+                  510.64,
+                  439.19984999999997
+                ]
+              },
+              "bbox_iou": 0.0,
+              "mask_coverage": 0.0,
+              "area_ratio": 2.196372639764359
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000025096:class_swap",
+      "image": "000000025096",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 6191773,
+            "category_id": 61,
+            "class_name": "cake",
+            "bbox_xyxy": [
+              0.0,
+              233.0,
+              375.0,
+              500.0
+            ],
+            "mask_pixels": 52751
+          },
+          "detection": {
+            "row": 6,
+            "class_id": 60,
+            "class_name": "dining table",
+            "bbox_xyxy": [
+              0.0,
+              232.68,
+              375.0,
+              500.0
+            ]
+          },
+          "bbox_iou": 0.9988029328146042,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 6,
+                "class_id": 60,
+                "class_name": "dining table",
+                "bbox_xyxy": [
+                  0.0,
+                  232.68,
+                  375.0,
+                  500.0
+                ]
+              },
+              "bbox_iou": 0.9988029328146042,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.0011985018726592
+            },
+            {
+              "detection": {
+                "row": 4,
+                "class_id": 36,
+                "class_name": "skateboard",
+                "bbox_xyxy": [
+                  101.22018750000001,
+                  277.25,
+                  326.24006249999996,
+                  409.69999999999993
+                ]
+              },
+              "bbox_iou": 0.29766674101123575,
+              "mask_coverage": 0.18084965213929594,
+              "area_ratio": 0.29766674101123575
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  1.1199375000000011,
+                  37.08,
+                  212.3600625,
+                  328.09
+                ]
+              },
+              "bbox_iou": 0.1419451493109106,
+              "mask_coverage": 0.1033155769558871,
+              "area_ratio": 0.6139624347191012
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "image": "000000014380",
+      "reason": "unknown category for segment 4341613"
+    },
+    {
+      "image": "000000018150",
+      "reason": "image unavailable: human review blocked"
+    }
+  ],
+  "summary": {
+    "candidates": 7,
+    "images": 7,
+    "by_type": {
+      "class_swap": 3,
+      "missing_box": 4
+    },
+    "diagnostics": 2
+  }
+}

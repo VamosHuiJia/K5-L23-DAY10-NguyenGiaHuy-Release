@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "release_id": "lab250_5a8f63fb9dd0",
+  "fingerprint": "ab2386aa22a84f27d0fbb71dd5a555bfdff00c7a1cddc080dedac67782480628",
+  "scope": [
+    "000000006460:class_swap",
+    "000000007278:missing_box",
+    "000000007888:missing_box",
+    "000000009769:class_swap",
+    "000000019221:missing_box",
+    "000000020247:missing_box",
+    "000000025096:class_swap"
+  ],
+  "reviewer": "Nguyễn Hải Đăng",
+  "decisions": {
+    "000000006460:class_swap": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "class_swap",
+          "verdict": "confirmed",
+          "note": "backpack nhầm với person",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "confirmed",
+          "note": "mask của `person` đánh cả phần của `surfboard` ",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    },
+    "000000007278:missing_box": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "missing_box",
+          "verdict": "rejected",
+          "note": "",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "",
+          "note": "mask của `surrfboard` phạm vào `person`",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    },
+    "000000007888:missing_box": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "missing_box",
+          "verdict": "rejected",
+          "note": "",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    },
+    "000000009769:class_swap": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "class_swap",
+          "verdict": "confirmed",
+          "note": "đánh 2 box person trong xe dù không thấy rõ/có đủ bằng chứng thấy rõ. Lí do: overfit với feature người trong xe; Đánh nhầm xe hơi thành `refrigerator`",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "",
+          "note": "",
+          "reviewer": ""
+        }
+      ]
+    },
+    "000000019221:missing_box": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "missing_box",
+          "verdict": "confirmed",
+          "note": "thiếu class cải, hay `vegetable`",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "",
+          "note": "thiếu mask cho `person`",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    },
+    "000000020247:missing_box": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "missing_box",
+          "verdict": "confirmed",
+          "note": "thiếu box `bear` ở góc trái ảnh dù có thể thấy rõ. Lí do: underfit với feature `bear`",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "confirmed",
+          "note": "thiếu mask cho `bear` đã được đánh bbox",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    },
+    "000000025096:class_swap": {
+      "reviewed": true,
+      "rows": [
+        {
+          "type": "class_swap",
+          "verdict": "confirmed",
+          "note": "nhầm class skateboard với class cake. Lí do: nhầm tự nhiên do tạo hình bánh quá giống skateboard.",
+          "reviewer": "Nguyễn Hải Đăng"
+        },
+        {
+          "type": "category_swap",
+          "verdict": "confirmed",
+          "note": "mask `dining table` thành cake",
+          "reviewer": "Nguyễn Hải Đăng"
+        }
+      ]
+    }
+  },
+  "revision": 0,
+  "submitted": false
+}

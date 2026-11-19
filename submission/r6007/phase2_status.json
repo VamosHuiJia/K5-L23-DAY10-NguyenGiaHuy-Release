@@ -1,0 +1,45 @@
+{
+  "state": "complete",
+  "review_hash": "d08c6b1306ec2b40f492c6a5076f8ce075d72e5f84bb72b5402196c6b43ad4a1",
+  "scored_hash": "d08c6b1306ec2b40f492c6a5076f8ce075d72e5f84bb72b5402196c6b43ad4a1",
+  "human_review_rows": 10,
+  "confirmed": 8,
+  "rejected": 2,
+  "scope": "Nguyễn Hải Đăng",
+  "phase2_team_complete": false,
+  "excluded_work": [
+    "Đặng Quốc Thái: bbox_drift, instance_merge và tích hợp phần Thái"
+  ],
+  "documentation_gaps": [
+    {
+      "candidate": "000000007278:missing_box",
+      "type": "missing_box",
+      "issue": "rejected_without_observation_note"
+    },
+    {
+      "candidate": "000000007888:missing_box",
+      "type": "missing_box",
+      "issue": "rejected_without_observation_note"
+    }
+  ],
+  "optional_comments_without_verdict": [
+    {
+      "candidate": "000000007278:missing_box",
+      "type": "category_swap",
+      "note": "mask của `surrfboard` phạm vào `person`",
+      "reviewer": "Nguyễn Hải Đăng",
+      "issue": "optional_comment_without_verdict"
+    },
+    {
+      "candidate": "000000019221:missing_box",
+      "type": "category_swap",
+      "note": "thiếu mask cho `person`",
+      "reviewer": "Nguyễn Hải Đăng",
+      "issue": "optional_comment_without_verdict"
+    }
+  ],
+  "final_hashes": {
+    "review_log.csv": "5f44feb097609bfa727c7f803aecc304eb72cc8ea47ff050e02972f03b787be5",
+    "errors.json": "549c159439df29d4f624359746b7736a85cb54653efe62aeef07da9bfb46b9a7"
+  }
+}

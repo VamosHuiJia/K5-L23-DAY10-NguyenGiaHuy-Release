@@ -1,0 +1,11 @@
+image,type,verdict,note
+000000006460,category_swap,confirmed,Reviewer: Nguyễn Hải Đăng; mask của `person` đánh cả phần của `surfboard`
+000000006460,class_swap,confirmed,Reviewer: Nguyễn Hải Đăng; backpack nhầm với person
+000000007278,missing_box,rejected,Reviewer: Nguyễn Hải Đăng; [Import metadata: người review chọn rejected trong file gốc; không có ghi chú quan sát.]
+000000007888,missing_box,rejected,Reviewer: Nguyễn Hải Đăng; [Import metadata: người review chọn rejected trong file gốc; không có ghi chú quan sát.]
+000000009769,class_swap,confirmed,Reviewer: Nguyễn Hải Đăng; đánh 2 box person trong xe dù không thấy rõ/có đủ bằng chứng thấy rõ. Lí do: overfit với feature người trong xe; Đánh nhầm xe hơi thành `refrigerator`
+000000019221,missing_box,confirmed,"Reviewer: Nguyễn Hải Đăng; thiếu class cải, hay `vegetable`"
+000000020247,category_swap,confirmed,Reviewer: Nguyễn Hải Đăng; thiếu mask cho `bear` đã được đánh bbox
+000000020247,missing_box,confirmed,Reviewer: Nguyễn Hải Đăng; thiếu box `bear` ở góc trái ảnh dù có thể thấy rõ. Lí do: underfit với feature `bear`
+000000025096,category_swap,confirmed,Reviewer: Nguyễn Hải Đăng; mask `dining table` thành cake
+000000025096,class_swap,confirmed,Reviewer: Nguyễn Hải Đăng; nhầm class skateboard với class cake. Lí do: nhầm tự nhiên do tạo hình bánh quá giống skateboard.

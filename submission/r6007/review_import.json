@@ -1,0 +1,40 @@
+{
+  "basis": "user_confirmed_review_complete",
+  "ui_submitted_flag_ignored": true,
+  "sources": [
+    {
+      "file": "review_progress_dang.json",
+      "sha256": "41d7d939d97cd94cf314d44657a3e3f7298128590f580c9886152fae75580890"
+    }
+  ],
+  "documentation_gaps": [
+    {
+      "candidate": "000000007278:missing_box",
+      "type": "missing_box",
+      "issue": "rejected_without_observation_note"
+    },
+    {
+      "candidate": "000000007888:missing_box",
+      "type": "missing_box",
+      "issue": "rejected_without_observation_note"
+    }
+  ],
+  "human_verdicts_changed": false,
+  "optional_comments_without_verdict": [
+    {
+      "candidate": "000000007278:missing_box",
+      "type": "category_swap",
+      "note": "mask của `surrfboard` phạm vào `person`",
+      "reviewer": "Nguyễn Hải Đăng",
+      "issue": "optional_comment_without_verdict"
+    },
+    {
+      "candidate": "000000019221:missing_box",
+      "type": "category_swap",
+      "note": "thiếu mask cho `person`",
+      "reviewer": "Nguyễn Hải Đăng",
+      "issue": "optional_comment_without_verdict"
+    }
+  ],
+  "blank_optional_mask_rows_omitted": true
+}
