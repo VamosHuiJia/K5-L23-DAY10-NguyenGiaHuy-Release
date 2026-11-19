@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validator for metadata and panoptic rules."""
+"""Validator for file, detection, metadata and panoptic rules."""
 
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import pngutil
+from file_detection import check_file_detection
 
 
 def image_stem(file_name: str) -> str:
@@ -169,7 +170,7 @@ def check_thing_overlaps(delivery: Path, panoptic: dict) -> list[dict]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Validate delivery metadata and panoptic rules")
+    parser = argparse.ArgumentParser(description="Validate delivery rule checks")
     parser.add_argument("delivery", type=Path)
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--candidates", type=Path)
@@ -180,6 +181,7 @@ def main() -> int:
         parser.error(f"delivery không tồn tại: {delivery}")
 
     findings = []
+    findings.extend(check_file_detection(delivery))
     findings.extend(check_scene_leaks(delivery / "metadata.json"))
     findings.extend(check_guideline_mismatches(delivery))
 
@@ -201,7 +203,7 @@ def main() -> int:
         args.candidates.parent.mkdir(parents=True, exist_ok=True)
         args.candidates.write_text(json.dumps({"candidates": []}, indent=2) + "\n", encoding="utf-8")
 
-    print(f"Đã ghi {len(output['errors'])} lỗi metadata/panoptic vào {args.out}")
+    print(f"Đã ghi {len(output['errors'])} lỗi luật vào {args.out}")
     return 0
 
 
