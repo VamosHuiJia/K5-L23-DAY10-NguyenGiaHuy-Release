@@ -1,7 +1,7 @@
-# Báo cáo nhóm <<XX>>
+# Báo cáo nhóm NguyenGiaHuy
 
 ## 1. Số liệu luyện tập
-- F1 theo seed (rule / cross_check / overall): <<seed: ... / ... / ...>>
+- F1 theo seed (rule / cross_check / overall): seed 6007: ≈ 1.0 / chưa có / ≈ 0.7, báo 11 lỗi luật; seed 6008: ≈ 1.0 / chưa có / ≈ 0.8, báo 12 lỗi luật. Các giá trị F1 được làm tròn theo kết quả tự đo. Nhóm em kiểm tra thêm lô sạch 50 ảnh, validator báo 0 lỗi luật.
 - Số ứng viên trên lô sạch (`--no-faults`): <<...>>; hàng đợi trên seed luyện tập: <<... ảnh>>
 - Ngưỡng đã chọn và cách chọn (không dùng `_private`): <<...>>
 
