@@ -144,7 +144,12 @@ class DeliveryReader:
         self.annotations = {a["image_id"]: a for a in self.panoptic["annotations"]}
         self.diagnostics: list[dict] = []
 
-    def compare(self, image: str) -> Comparison | None:
+    def compare(self, image: str, *, include_all_segments: bool = False) -> Comparison | None:
+        """Pixel evidence; default keeps the existing candidate behavior.
+
+        include_all_segments retains crowd and stuff metadata for integration.
+        The caller must filter these before ordinary instance matching.
+        """
         item = self.manifest[image]
         try:
             info = self.images[image]
@@ -163,7 +168,7 @@ class DeliveryReader:
                 if category is None:
                     self.diagnostics.append({"image": image, "reason": f"unknown category for segment {raw.get('id')}"})
                     continue
-                if not category.get("isthing") or raw.get("iscrowd", 0):
+                if not include_all_segments and (not category.get("isthing") or raw.get("iscrowd", 0)):
                     continue
                 try:
                     x, y, w, h = map(float, raw["bbox"])
@@ -176,6 +181,9 @@ class DeliveryReader:
                 segments.append({"id": sid, "category_id": category["id"],
                                  "class_name": category["name"],
                                  "bbox_xyxy": [x, y, x+w, y+h]})
+                if include_all_segments:
+                    segments[-1].update(iscrowd=int(raw.get("iscrowd", 0)),
+                                        isthing=int(category.get("isthing", 0)))
             spans = mask_spans(width, height, pixels, {s["id"] for s in segments})
             pairs = {}
             for segment in segments:
@@ -198,6 +206,47 @@ class DeliveryReader:
         except (OSError, ValueError, KeyError, TypeError, zlib.error, IndexError) as exc:
             self.diagnostics.append({"image": image, "reason": f"comparison skipped: {exc}"})
             return None
+
+    def match(self, image: str, config: Thresholds | None = None) -> dict | None:
+        """Return a JSON-ready basic matching contract for drift/merge callers.
+
+        ``pairs`` retains every box/segment measurement, including zero overlap.
+        ``matches`` selects spatial matches to non-crowd things, independently
+        of class, without imposing a one-to-one assignment. No fault verdicts.
+        On unreadable inputs return None; inspect reader.diagnostics.
+        """
+        config = config or Thresholds()
+        comparison = self.compare(image, include_all_segments=True)
+        if comparison is None:
+            return None
+        segments = sorted(comparison.segments, key=lambda segment: segment["id"])
+        pairs = []
+        for segment in segments:
+            eligible = segment["isthing"] == 1 and segment["iscrowd"] == 0 and segment["mask_pixels"] > 0
+            for measurement in comparison.pairs[segment["id"]]:
+                pairs.append({"box_row": measurement["detection"]["row"],
+                              "segment_id": segment["id"],
+                              "bbox_iou": measurement["bbox_iou"],
+                              "mask_coverage": measurement["mask_coverage"],
+                              "area_ratio": measurement["area_ratio"],
+                              "same_class": measurement["detection"]["class_name"] == segment["class_name"],
+                              "eligible_for_matching": eligible,
+                              "matched": eligible and strong_match(measurement, config)})
+        pairs.sort(key=lambda pair: (pair["box_row"], pair["segment_id"]))
+        matches = [pair.copy() for pair in pairs if pair["matched"]]
+        matched_boxes = {pair["box_row"] for pair in matches}
+        matched_segments = {pair["segment_id"] for pair in matches}
+        return {"schema_version": 1, "image": image,
+                "file_name": Path(self.manifest[image]["image"]).name,
+                "width": comparison.width, "height": comparison.height,
+                "image_available": comparison.image_available,
+                "matching_config": asdict(config),
+                "boxes": comparison.boxes, "segments": segments,
+                "pairs": pairs, "matches": matches,
+                "unmatched_box_rows": [box["row"] for box in comparison.boxes if box["row"] not in matched_boxes],
+                "unmatched_segment_ids": [segment["id"] for segment in segments
+                                          if segment["isthing"] == 1 and segment["iscrowd"] == 0
+                                          and segment["id"] not in matched_segments]}
 
 
 def strong_match(pair: dict, config: Thresholds) -> bool:

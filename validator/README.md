@@ -59,6 +59,13 @@ thay đổi. Không chọn ngưỡng bằng cách dò điểm từng ảnh.
 
 ### Tích hợp phần Thái
 
+API ghép cơ bản dành cho nhóm trưởng: **`DeliveryReader.match(image)`** trả dict
+JSON-ready gồm tên/kích thước ảnh, box pixel với row/tên lớp, segment có
+iscrowd/isthing, mọi số đo `pairs` và danh sách cặp được chọn `matches`.
+Hướng dẫn/contract: [DETECTION_PANOPTIC_API.md](../docs/DETECTION_PANOPTIC_API.md).
+Output mẫu đầy đủ: [matching.sample.json](../examples/matching.sample.json).
+API này dùng độc lập, không cần chạy phần sai lớp/thiếu box hoặc viewer.
+
 `DeliveryReader.compare(image)` trả `Comparison` gồm boxes, segments, mask
 `spans` dạng `[y, left, right_exclusive]`, và mọi cặp trong `pairs[segment_id]`.
 Không ép ghép 1–1. Thái có thể dùng lại để phát hiện drift/merge; thêm record
