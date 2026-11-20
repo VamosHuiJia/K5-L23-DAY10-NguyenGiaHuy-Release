@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Review lỗi luật · Day 10</title>
+<style>
+*{box-sizing:border-box}body{margin:0;color:#172d40;background:#eef4f8;font:15px/1.5 system-ui,sans-serif}header{padding:20px 28px;background:#142f43;color:#fff}h1{font-size:24px;margin:0}header p{margin:4px 0;color:#c9dfe9}main{padding:20px;max-width:1600px;margin:auto}button,input,select,textarea{font:inherit}button,select,input,textarea{border:1px solid #b7c8d4;border-radius:6px;background:white;padding:8px;color:#172d40}button{cursor:pointer}button:disabled{opacity:.45;cursor:default}button.primary{background:#006d77;color:white}label{display:inline-flex;align-items:center;gap:7px}textarea{width:100%;min-height:90px}.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:10px 0}.panel{background:white;border:1px solid #d2e0e8;border-radius:10px;padding:16px;margin-bottom:16px}.grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(340px,1fr);gap:16px}.notice{padding:12px;background:#fff4d4;border-radius:6px;margin-bottom:14px}.muted{color:#526a7c}.small{font-size:13px}h2{font-size:20px;margin:0 0 10px}h3{font-size:16px;margin:14px 0 6px}#viewport{height:510px;overflow:auto;background:#12202d;border-radius:7px}#drawing{display:block;max-width:none}#drawing text{font:12px monospace;paint-order:stroke;stroke:#132330;stroke-width:2px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f2f6f9;padding:12px;border-radius:6px;max-height:390px;overflow:auto;font:13px/1.6 ui-monospace,monospace}blockquote{margin:8px 0 16px;border-left:4px solid #0e8390;padding:10px 12px;background:#eff8f8}blockquote p{margin:5px 0}a{color:#006b7a}#message{white-space:pre-wrap;color:#91480a}#progress{font-weight:650}#caseSelect{max-width:480px}#imageSelect{max-width:280px}#missing{padding:24px;color:white;white-space:pre-wrap}#completion{font-weight:600;color:#006d77}input[type=checkbox]{accent-color:#007e87}details summary{cursor:pointer}.evidence-note{padding:10px;background:#eaf3ff;border-radius:6px}@media(max-width:1000px){.grid{grid-template-columns:1fr}main{padding:12px}#viewport{height:400px}}
+</style>
+<header><h1 id="pageTitle">Review lỗi luật · Bằng chứng và điều khoản</h1><p id="release"></p></header>
+<main>
+<div class="notice">Đây là review luật riêng: không sửa delivery, errors.json hay review nhãn đã chốt. Confirmed và rejected đều được tính đã review. Ghi chú là tùy chọn; không bắt bạn review thêm một loại mask khác để xong mục đang chọn.</div>
+<section class="panel">
+<div class="bar"><label>Người review <input id="reviewer" placeholder="Nhập tên người đang kiểm tra"></label><span id="progress" role="status"></span></div>
+<div class="bar"><label>Loại lỗi <select id="typeFilter"><option value="">Tất cả</option></select></label><label>Trạng thái <select id="statusFilter"><option value="">Tất cả</option><option value="pending">Chưa review</option><option value="done">Đã review</option></select></label><button id="previous">← Trước</button><label>Mục <select id="caseSelect"></select></label><button id="next">Sau →</button></div>
+</section>
+<div class="grid"><section class="panel"><h2 id="caseTitle"></h2><p id="caseHint" class="muted"></p>
+<div class="bar"><label>Ảnh trong mục <select id="imageSelect"></select></label><label><input id="showBoxes" type="checkbox" checked> Box</label><label><input id="showMask" type="checkbox"> Segment liên quan</label></div>
+<div class="bar"><label>Box cần xem <select id="focusBox"><option value="">Tất cả</option></select></label><label>Zoom <input id="zoom" type="range" min="25" max="400" step="25" value="100"></label><button id="fit">Vừa khung</button></div>
+<div id="viewport"><div id="missing" hidden></div><svg id="drawing" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ảnh và bằng chứng box, segment của mục lỗi luật"></svg></div>
+<p id="assetInfo" class="small muted"></p>
+<details><summary>Nhãn YOLO gốc của ảnh đang chọn</summary><pre id="rawLabels"></pre></details>
+<details><summary>Metadata ảnh và job</summary><pre id="metadata"></pre></details>
+</section>
+<section>
+<div class="panel"><h2>Điều khoản / guideline được trích</h2><p class="small muted">Định nghĩa lỗi lấy từ docs/DELIVERY.md, cách kiểm tra lấy từ GUIDE.md. Với phiên bản guideline, so theo job trong jobs.csv; changelog chỉ cung cấp ngữ cảnh thay đổi.</p><div id="citations"></div></div>
+<div class="panel"><h2>Bằng chứng máy tính được</h2><pre id="facts"></pre><p class="small muted">Đây là số liệu từ delivery, chưa phải kết luận người xem. Với hash/metadata, đọc bằng chứng số liệu; không chỉ nhìn ảnh.</p></div>
+<div class="panel"><h2>Kết luận của bạn</h2><label><input id="reviewed" type="checkbox"> Tôi đã kiểm tra bằng chứng và ảnh nếu có</label><div class="bar"><label>Verdict <select id="verdict"><option value="">Chưa kết luận</option><option value="confirmed">confirmed — Đồng ý có lỗi luật</option><option value="rejected">rejected — Không xác nhận lỗi luật này</option></select></label></div><label for="note">Ghi chú quan sát / lý do (tùy chọn)</label><textarea id="note" placeholder="Có thể bổ sung lý do hoặc điểm cần nhóm trưởng xem lại."></textarea><p id="completion" role="status"></p></div>
+</section></div>
+<section class="panel"><div class="bar"><button id="saveJson" class="primary">Lưu progress JSON</button><label>Nạp progress luật <input id="loadJson" type="file" accept=".json,application/json"></label><button id="saveCsv">Xuất CSV review luật</button></div><p id="storageInfo" class="small muted"></p><p id="message" role="alert"></p><p class="small muted">File tải về Downloads theo cài đặt trình duyệt. Chép JSON vào runs/r6007/rule_review_progress.json và CSV vào runs/r6007/rule_review_log.csv. Đây là audit luật riêng, không dùng scripts/merge_review.py cho file này.</p></section>
+</main>
+<script id="ruleData" type="application/json">/*__RULE_DATA__*/</script>
+<script>
+'use strict';
+const DATA=JSON.parse(document.getElementById('ruleData').textContent),$=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+const cases=new Map(DATA.cases.map(c=>[c.id,c])),storageKey=`rule-review:${DATA.release_id}:${DATA.fingerprint}`;
+let decisions={},currentId=DATA.cases[0]?.id||null,selectedImage=null,dirty=false,storageOkay=false;
+function initial(){return {reviewed:false,verdict:'',note:'',reviewer:''};}
+function entry(c){return decisions[c.id]||initial();}
+function done(c){const d=entry(c);return d.reviewed===true&&['confirmed','rejected'].includes(d.verdict)&&!!d.reviewer.trim();}
+function progress(){return {schema_version:1,mode:'rule_review',release_id:DATA.release_id,fingerprint:DATA.fingerprint,reviewer:$('reviewer').value.trim(),decisions};}
+function inform(text){$('message').textContent=text;}
+function saveLocal(){try{localStorage.setItem(storageKey,JSON.stringify(progress()));storageOkay=true;dirty=false;$('storageInfo').textContent='Đã lưu tạm trong trình duyệt. Vẫn nên xuất progress JSON trước khi đóng để có bản bàn giao.';}catch(_error){storageOkay=false;$('storageInfo').textContent='Trình duyệt không hỗ trợ lưu tạm ở đây. Dùng Lưu progress JSON để giữ kết quả.';}}
+function visible(){return DATA.cases.filter(c=>(!$('typeFilter').value||c.type===$('typeFilter').value)&&(!$('statusFilter').value||done(c)===($('statusFilter').value==='done')));}
+function update(){
+ $('progress').textContent=`${DATA.cases.filter(done).length}/${DATA.cases.length} mục đã review · ${DATA.summary.related_images} ảnh liên quan`;
+ for(const option of $('caseSelect').options){const c=cases.get(option.value);option.textContent=`${done(c)?'✓':'○'} ${c.type} · ${c.target}`;}
+ const c=cases.get(currentId);if(c){const d=entry(c);$('completion').textContent=done(c)?'Đã review mục này':!d.reviewed?'Chưa đánh dấu đã kiểm tra':!d.verdict?'Chưa chọn verdict':!d.reviewer.trim()?'Cần nhập tên người review':'';}
+ const list=visible(),index=list.findIndex(c=>c.id===currentId);$('previous').disabled=!list.length||index===0;$('next').disabled=!list.length||(index>=0&&index===list.length-1);
+}
+function mark(){const c=cases.get(currentId);if(!c)return;const d={reviewed:$('reviewed').checked,verdict:$('verdict').value,note:$('note').value,reviewer:$('reviewer').value.trim()||entry(c).reviewer};decisions[c.id]=d;dirty=true;update();saveLocal();}
+function svg(tag,attrs,parent){const el=document.createElementNS(NS,tag);for(const [key,value]of Object.entries(attrs))el.setAttribute(key,String(value));parent.appendChild(el);return el;}
+function resize(){const a=DATA.assets[selectedImage];if(!a)return;const scale=Number($('zoom').value)/100;$('drawing').style.width=`${a.width*scale}px`;$('drawing').style.height=`${a.height*scale}px`;}
+function renderImage(){
+ const c=cases.get(currentId),a=DATA.assets[selectedImage];$('drawing').replaceChildren();if(!c||!a)return;
+ $('rawLabels').textContent=a.label_text||'(file nhãn trống hoặc thiếu)';$('metadata').textContent=JSON.stringify({metadata:a.metadata,job:a.job},null,2);
+ $('assetInfo').textContent=`${a.file_name} · ${a.width} × ${a.height} pixel${a.mask_error?' · Lỗi đọc mask: '+a.mask_error:''}`;
+ $('missing').hidden=!a.image_missing;$('drawing').style.display=a.image_missing?'none':'block';
+ if(a.image_missing){$('missing').textContent=`Không có file ảnh: ${a.file_name}\nĐây là bằng chứng hợp lệ cho missing_image. Hãy kiểm tra manifest và trạng thái file ở cột bên phải; vẫn có thể review mục này.`;return;}
+ let bounds=[0,0,a.width,a.height];
+ if(c.type==='bbox_out_of_bounds')for(const b of a.boxes.filter(b=>c.highlight_box_rows.includes(b.row))){bounds=[Math.min(bounds[0],b.bbox_xyxy[0]-10),Math.min(bounds[1],b.bbox_xyxy[1]-10),Math.max(bounds[2],b.bbox_xyxy[2]+10),Math.max(bounds[3],b.bbox_xyxy[3]+10)];}
+ $('drawing').setAttribute('viewBox',`${bounds[0]} ${bounds[1]} ${bounds[2]-bounds[0]} ${bounds[3]-bounds[1]}`);
+ const img=svg('image',{href:a.image_data,width:a.width,height:a.height},$('drawing'));
+ img.addEventListener('error',()=>inform('Trình duyệt không mở được ảnh. Ghi nhận lỗi mở ảnh và kiểm tra lại, không tự suy là file bị thiếu.'));
+ if($('showMask').checked)for(const s of a.segments.filter(s=>c.highlight_segment_ids.includes(s.id))){svg('path',{d:s.path,fill:'#ff9d3d','fill-opacity':.5},$('drawing'));const [x,y]=s.bbox_xyxy;svg('text',{x,y:Math.max(14,y-4),fill:'#ffc785'},$('drawing')).textContent=`S${s.id}: ${s.class_name}`;}
+ if($('showBoxes').checked)for(const b of a.boxes){if($('focusBox').value&&String(b.row)!==$('focusBox').value)continue;const [x,y,x1,y1]=b.bbox_xyxy;const flagged=c.highlight_box_rows.includes(b.row);svg('rect',{x,y,width:Math.max(0,x1-x),height:Math.max(0,y1-y),fill:'none',stroke:flagged?(b.row%2?'#ff886d':'#ffd447'):'#58e7be','stroke-width':flagged?2:1,'stroke-dasharray':flagged&&b.row%2?'5 2':'none'},$('drawing'));svg('text',{x,y:Math.max(14,y+14),fill:flagged?'#ffd788':'#65f6cb'},$('drawing')).textContent=`D${b.row}: ${b.class_name}`;}
+ svg('rect',{x:0,y:0,width:a.width,height:a.height,fill:'none',stroke:'#fff','stroke-width':1},$('drawing'));resize();
+}
+function render(){
+ const filtered=visible(),selector=$('caseSelect');selector.replaceChildren();
+ for(const c of filtered)selector.add(new Option(`${c.type} · ${c.target}`,c.id));
+ if(!filtered.some(c=>c.id===currentId))currentId=filtered[0]?.id||null;
+ selector.value=currentId||'';$('previous').disabled=!filtered.length||filtered[0].id===currentId;$('next').disabled=!filtered.length||filtered.at(-1).id===currentId;
+ $('citations').replaceChildren();$('imageSelect').replaceChildren();$('focusBox').replaceChildren(new Option('Tất cả',''));inform('');
+ const c=cases.get(currentId);if(!c){$('caseTitle').textContent='Không có mục theo bộ lọc';$('caseHint').textContent='';$('drawing').replaceChildren();$('facts').textContent='';$('completion').textContent='';update();return;}
+ $('caseTitle').textContent=`${c.title} · ${c.target}`;$('caseHint').textContent=c.type==='scene_leak'?`Mục này là một scene, có ${c.images.length} ảnh; so sánh bảng split của cả cảnh.`:'Mỗi mục chỉ có một kết luận cho loại lỗi luật đang được chọn.';
+ for(const image of c.images)$('imageSelect').add(new Option(image,image));
+ if(!c.images.includes(selectedImage))selectedImage=c.images[0];$('imageSelect').value=selectedImage;
+ for(const b of DATA.assets[selectedImage].boxes)$('focusBox').add(new Option(`D${b.row}: ${b.class_name}`,String(b.row)));
+ $('showMask').checked=c.highlight_segment_ids.length>0;
+ $('facts').textContent=JSON.stringify(c.facts,null,2);
+ for(const cite of c.citations){const block=document.createElement('blockquote'),source=document.createElement(cite.url?'a':'strong');source.textContent=`${cite.source}:${cite.line}`;if(cite.url){source.href=cite.url;source.target='_blank';source.rel='noopener noreferrer';}const quote=document.createElement('p');quote.textContent=cite.quote;block.append(source,quote);$('citations').append(block);}
+ const d=entry(c);$('reviewed').checked=d.reviewed;$('verdict').value=d.verdict;$('note').value=d.note;renderImage();update();
+}
+function restore(incoming){
+ if(incoming.mode!=='rule_review'||incoming.schema_version!==1||incoming.release_id!==DATA.release_id||incoming.fingerprint!==DATA.fingerprint)throw Error('File không phải review luật của đúng lô/bằng chứng này.');
+ if(!incoming.decisions||typeof incoming.decisions!=='object'||Array.isArray(incoming.decisions))throw Error('Progress không hợp lệ');
+ for(const [id,d]of Object.entries(incoming.decisions)){if(!cases.has(id)||!d||typeof d.reviewed!=='boolean'||!['','confirmed','rejected'].includes(d.verdict)||typeof d.note!=='string'||typeof d.reviewer!=='string')throw Error('Dòng review không hợp lệ');}
+ decisions=incoming.decisions;$('reviewer').value=typeof incoming.reviewer==='string'?incoming.reviewer:'';render();
+}
+function download(name,text,mime){const url=URL.createObjectURL(new Blob([text],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function csvText(){const missing=DATA.cases.filter(c=>!done(c));if(missing.length)throw Error(`Còn ${missing.length} mục chưa xong: ${missing[0].type} · ${missing[0].target}. Cần đánh dấu đã kiểm tra, chọn verdict và nhập tên; ghi chú không bắt buộc.`);const q=s=>'"'+String(s).replaceAll('"','""')+'"';return 'target,type,verdict,note,reviewer\n'+DATA.cases.map(c=>{const d=entry(c);return [c.target,c.type,d.verdict,d.note,d.reviewer].map(q).join(',');}).join('\n')+(DATA.cases.length?'\n':'');}
+$('release').textContent=`Release ${DATA.release_id} · ${DATA.summary.findings} finding luật, không phải danh sách semantic`;
+$('pageTitle').textContent=`Review ${DATA.summary.findings} lỗi luật · Bằng chứng và điều khoản`;
+for(const type of [...new Set(DATA.cases.map(c=>c.type))].sort())$('typeFilter').add(new Option(type,type));
+for(const id of ['typeFilter','statusFilter'])$(id).onchange=render;
+$('caseSelect').onchange=()=>{currentId=$('caseSelect').value;render();};
+for(const [id,step]of [['previous',-1],['next',1]])$(id).onclick=()=>{const list=visible(),index=list.findIndex(c=>c.id===currentId),target=index<0?list[0]:list[index+step];if(target){currentId=target.id;render();}};
+$('imageSelect').onchange=()=>{selectedImage=$('imageSelect').value;$('focusBox').replaceChildren(new Option('Tất cả',''));for(const b of DATA.assets[selectedImage].boxes)$('focusBox').add(new Option(`D${b.row}: ${b.class_name}`,String(b.row)));renderImage();};
+for(const id of ['showBoxes','showMask','focusBox'])$(id).onchange=renderImage;
+$('zoom').oninput=resize;$('fit').onclick=()=>{const a=DATA.assets[selectedImage];if(a){$('zoom').value=Math.max(25,Math.min(400,Math.floor($('viewport').clientWidth/a.width*4)*25));resize();}};
+for(const id of ['reviewed','verdict'])$(id).onchange=mark;$('note').oninput=mark;
+$('reviewer').oninput=()=>{const name=$('reviewer').value.trim();if(name)for(const d of Object.values(decisions))if(!d.reviewer)d.reviewer=name;dirty=true;update();saveLocal();};
+$('saveJson').onclick=()=>{download('rule_review_progress.json',JSON.stringify(progress(),null,2),'application/json;charset=utf-8');dirty=false;inform('Đã yêu cầu tải progress luật. Kiểm tra file trong Downloads.');};
+$('saveCsv').onclick=()=>{try{download('rule_review_log.csv',csvText(),'text/csv;charset=utf-8');inform('Đã yêu cầu tải CSV review luật. File này không thay đổi errors hoặc review semantic.');}catch(error){inform(error.message);}};
+$('loadJson').onchange=async()=>{try{const file=$('loadJson').files[0];if(!file)return;restore(JSON.parse(await file.text()));saveLocal();inform('Đã nạp review luật.');}catch(error){inform(error.message);}finally{$('loadJson').value='';}};
+window.addEventListener('beforeunload',event=>{if(dirty&&!storageOkay){event.preventDefault();event.returnValue='';}});
+try{const saved=localStorage.getItem(storageKey);if(saved)restore(JSON.parse(saved));storageOkay=true;$('storageInfo').textContent='Có lưu tạm trong trình duyệt. Hãy xuất JSON để bàn giao và sao lưu.';}catch(_error){$('storageInfo').textContent='Dùng Lưu progress JSON để sao lưu trước khi đóng trang.';}
+render();
+</script></html>
