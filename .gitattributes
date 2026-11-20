@@ -1,0 +1,2 @@
+# Preserve handover bytes so checkout does not change SHA-256 hashes.
+submission/**/handover/** -text

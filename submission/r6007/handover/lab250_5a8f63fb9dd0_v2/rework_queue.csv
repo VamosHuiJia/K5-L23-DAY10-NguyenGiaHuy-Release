@@ -1,0 +1,11 @@
+image,type,annotator,reviewer,action
+000000006460,class_swap,A04,Q02,Gán lại đúng lớp và kiểm tra lại nhãn
+000000006614,bbox_drift,A04,Q02,Gán lại box đúng vị trí đối tượng
+000000009769,class_swap,A04,Q01,Gán lại đúng lớp và kiểm tra lại nhãn
+000000010707,bbox_drift,A02,Q02,Gán lại box đúng vị trí đối tượng
+000000011122,duplicate_box,A02,Q02,Loại box trùng và kiểm tra lại nhãn
+000000017379,bbox_out_of_bounds,A05,Q03,Gán lại box nằm trong phạm vi ảnh
+000000017436,duplicate_box,A05,Q03,Loại box trùng và kiểm tra lại nhãn
+000000018150,missing_image,A04,Q01,Bổ sung ảnh còn thiếu và kiểm tra lại nhãn
+000000019221,missing_box,A04,Q01,Bổ sung box cho đối tượng bị bỏ sót
+000000020247,missing_box,A04,Q01,Bổ sung box cho đối tượng bị bỏ sót
