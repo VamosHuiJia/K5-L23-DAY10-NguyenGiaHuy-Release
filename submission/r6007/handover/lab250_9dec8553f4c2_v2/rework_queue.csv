@@ -1,0 +1,11 @@
+image,annotator,reviewer,reason
+000000006460,A04,Q02,class_swap
+000000006614,A04,Q02,bbox_drift
+000000009769,A04,Q01,class_swap
+000000010707,A02,Q02,bbox_drift
+000000011122,A02,Q02,duplicate_box
+000000017379,A05,Q03,bbox_out_of_bounds
+000000017436,A05,Q03,duplicate_box
+000000018150,A04,Q01,missing_image
+000000019221,A04,Q01,missing_box
+000000020247,A04,Q01,missing_box

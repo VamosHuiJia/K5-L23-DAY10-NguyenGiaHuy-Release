@@ -9,13 +9,13 @@
 Trong lô sạch, cả 2 ứng viên `instance_merge` đều bị nhóm em bác bỏ: mask chỉ một người hoặc con vật bị che khuất, nằm giữa hai box của vật khác. Nếu báo cả hai là lỗi thì phát sinh 2 báo thừa (FP), làm giảm precision và có thể giảm F1. Với bộ review luyện tập, nhóm em giữ 9 dòng `confirmed`, loại 8 dòng `rejected`, rồi gộp với 11 lỗi luật thành 20 lỗi; F1 tổng sau gộp ≈ 1.0.
 
 ## 3. Quyết định và lineage
-Nhóm em chốt QC v1 là 20/250 = 8%; theo quy ước lab, mỗi `scene_leak` tính là một ảnh lỗi. Tỉ lệ vượt ngưỡng 2% nên lô `lab250_5a8f63fb9dd0` được quyết định HOLD, đã ghi trong lineage. Lệnh impact trả về `R-021: affected=True action=review_or_retrain`. R-021 đã dùng lô v1, nên cần được xem lại hoặc train lại; sửa dataset không tự sửa model đã học từ dữ liệu cũ.
+Nhóm em chốt QC v1 là 20/250 = 8%; theo quy ước lab, mỗi `scene_leak` tính là một ảnh lỗi. Tỉ lệ vượt ngưỡng 2% nên lô `lab250_9dec8553f4c2` được quyết định HOLD, đã ghi trong lineage. Lệnh impact trả về `R-021: affected=True action=review_or_retrain`. R-021 đã dùng lô v1, nên cần được xem lại hoặc train lại; sửa dataset không tự sửa model đã học từ dữ liệu cũ. Bản v2 `lab250_9dec8553f4c2_v2` đã được tạo làm release con.
 
 ## 4. Hash chứng minh gì, không chứng minh gì?
-<<>>
+SHA-256 trong manifest giúp phát hiện file byte hiện tại khác với file đã ghi nhận; nó không chứng minh nội dung nhãn đúng hay ảnh phù hợp với nhãn. Hai ảnh `000000013659` và `000000025393` bị sai hash ở v1 nhưng mở được; v1 được giữ nguyên, còn manifest của v2 ghi hash thực tế của bản sao ảnh. Hash v2 khớp file sau khi đóng gói.
 
 ## 5. Truy vết
-<<Tiêu chí tầng a/b, vì sao lấy guideline theo job.>>
+Ticket nêu `scene_733` và `scene_742`; tier_a gồm `000000002157`, `000000002431`, `000000003845`, `000000003934`. Tier_b gồm các ảnh khác có lớp cup, thuộc job guideline cũ: `000000002592`, `000000002685`, `000000003661`. Cả hai tầng dùng guideline theo `jobs.csv`, không dùng phiên bản trong metadata ảnh vì chính metadata có thể sai. Các job liên quan do A02 gán và Q01 kiểm nên `notify` là A02, Q01.
 
 ## 6. Bug hoặc điểm chưa rõ trong lab (nếu có)
-<<>>
+Hàng đợi validator có 17 ứng viên nhưng review log 17 dòng không phủ đúng các cặp ảnh-loại: có cặp ứng viên chưa có dòng review và có dòng review nằm ngoài hàng đợi. Các dòng ngoài hàng đợi không tự được xem là lỗi; errors.json chỉ nhận các verdict đã xác nhận. Mọi lỗi gán nhãn được nộp đều có dòng confirmed nên kiểm tra H3 đạt, nhưng không nên tuyên bố toàn bộ ứng viên đã được phân xử. Handover v2 đạt 17/17 kiểm tra định dạng; kết quả này không tự chứng minh nhãn đúng.
