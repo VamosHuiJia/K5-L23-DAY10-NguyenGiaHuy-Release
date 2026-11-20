@@ -1,0 +1,23 @@
+image,type,verdict,note
+img_0005,instance_merge,rejected,"One blonde woman; two boxes cover the same person, natural overlap; no second merged instance"
+img_0019,class_swap,confirmed,Detection box labeled cell phone covers a TV remote; panoptic remote segment correct; detection mislabeled
+img_0029,class_swap,confirmed,Detection box labeled couch covers a wooden chair back; panoptic chair segment correct; detection mislabeled
+img_0041,missing_box,confirmed,Knife held to cut cake has a panoptic segment but no detection box
+img_0051,instance_merge,rejected,"Adjacent crowd figures; segment overlap natural, not two merged instances"
+img_0056,bbox_drift,confirmed,"Truck box misses the left portion of the truck segment; coverage 0.78, misaligned"
+img_0059,bbox_drift,rejected,Box and book segment nearly coincide; natural tight box
+img_0061,instance_merge,rejected,"Blurred crowd overlap; natural, not a merged instance"
+img_0065,category_swap,confirmed,Object is a cow; detection cow correct; panoptic segment labeled horse
+img_0095,instance_merge,rejected,Spectator segment overlaps two boxes naturally; no merged instance
+img_0096,bbox_drift,rejected,Distant car; box and segment coincide; natural
+img_0108,category_swap,confirmed,Object is a laptop; detection laptop correct; panoptic segment labeled tv
+img_0122,instance_merge,rejected,Tiny strip between parked vans; natural overlap
+img_0155,instance_merge,confirmed,Two seated spectators share one panoptic person segment; detection keeps two separate boxes
+img_0171,bbox_drift,confirmed,"Cup box truncates the top of the measuring-glass segment; coverage 0.90 borderline, box shifted up"
+img_0177,class_swap,rejected,Cat detection correct; laptop segment is a separate overlapping object; no swap
+img_0190,class_swap,confirmed,Object at left edge is a horse; detection labeled cow; panoptic horse correct
+img_0210,instance_merge,rejected,Crowd overlap around the man on phone; natural
+img_0214,missing_box,rejected,Thin fence/guardrail strip misread as car; no unboxed car
+img_0214,instance_merge,rejected,Same fence strip; boxes belong to other cars; not a merged instance
+img_0221,instance_merge,rejected,Woman between two men; natural overlap
+img_0233,instance_merge,rejected,Tiny strip between two boys; natural overlap
