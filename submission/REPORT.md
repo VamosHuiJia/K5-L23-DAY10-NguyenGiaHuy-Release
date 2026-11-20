@@ -9,7 +9,7 @@
 Trong lô sạch, cả 2 ứng viên `instance_merge` đều bị nhóm em bác bỏ: mask chỉ một người hoặc con vật bị che khuất, nằm giữa hai box của vật khác. Nếu báo cả hai là lỗi thì phát sinh 2 báo thừa (FP), làm giảm precision và có thể giảm F1. Với bộ review luyện tập, nhóm em giữ 9 dòng `confirmed`, loại 8 dòng `rejected`, rồi gộp với 11 lỗi luật thành 20 lỗi; F1 tổng sau gộp ≈ 1.0.
 
 ## 3. Quyết định và lineage
-<<QC v1 a/b, kết luận, vì sao R-021 phải xem lại hoặc train lại.>>
+Nhóm em chốt QC v1 là 20/250 = 8%; theo quy ước lab, mỗi `scene_leak` tính là một ảnh lỗi. Tỉ lệ vượt ngưỡng 2% nên lô `lab250_5a8f63fb9dd0` được quyết định HOLD, đã ghi trong lineage. Lệnh impact trả về `R-021: affected=True action=review_or_retrain`. R-021 đã dùng lô v1, nên cần được xem lại hoặc train lại; sửa dataset không tự sửa model đã học từ dữ liệu cũ.
 
 ## 4. Hash chứng minh gì, không chứng minh gì?
 <<>>

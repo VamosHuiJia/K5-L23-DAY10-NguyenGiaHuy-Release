@@ -1,0 +1,1606 @@
+{
+  "schema_version": 1,
+  "release_id": "lab250_5a8f63fb9dd0",
+  "config": {
+    "match_iou": 0.5,
+    "mask_coverage": 0.85,
+    "min_area_ratio": 0.25,
+    "max_area_ratio": 4.0,
+    "min_segment_pixels": 128,
+    "min_segment_area_ratio": 0.0005,
+    "min_bbox_extent": 8
+  },
+  "mask_config": {
+    "drift_coverage": 0.9,
+    "merge_min_fraction": 0.15,
+    "merge_coverage": 0.85,
+    "merge_max_iou": 0.3,
+    "association_distance": 1.0
+  },
+  "candidates": [
+    {
+      "id": "000000001353:instance_merge",
+      "image": "000000001353",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 793662,
+            "category_id": 1,
+            "class_name": "person",
+            "bbox_xyxy": [
+              189.0,
+              183.0,
+              221.0,
+              245.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 982
+          },
+          "detections": [
+            {
+              "row": 6,
+              "class_id": 0,
+              "class_name": "person",
+              "bbox_xyxy": [
+                133.9700625,
+                180.54999999999998,
+                210.03018749999998,
+                253.26
+              ]
+            },
+            {
+              "row": 4,
+              "class_id": 0,
+              "class_name": "person",
+              "bbox_xyxy": [
+                138.5799375,
+                198.11,
+                266.6300625,
+                382.65000000000003
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000001353",
+            "type": "instance_merge",
+            "segment_id": 793662,
+            "boxes_xyxy": [
+              [
+                133.9700625,
+                180.54999999999998,
+                210.03018749999998,
+                253.26
+              ],
+              [
+                138.5799375,
+                198.11,
+                266.6300625,
+                382.65000000000003
+              ]
+            ],
+            "segment_pixels": 982,
+            "pixels_inside_boxes": [
+              572,
+              618
+            ],
+            "shared_pixels": 310,
+            "exclusive_segment_fractions": [
+              0.2668024439918534,
+              0.3136456211812627
+            ],
+            "combined_coverage": 0.8961303462321792,
+            "box_iou": 0.156242935797591,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              6,
+              4
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000006460:class_swap",
+      "image": "000000006460",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 1973790,
+            "category_id": 1,
+            "class_name": "person",
+            "bbox_xyxy": [
+              281.0,
+              138.0,
+              332.0,
+              207.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 1804
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 24,
+            "class_name": "backpack",
+            "bbox_xyxy": [
+              277.44992,
+              137.6598895,
+              332.10015999999996,
+              207.22971850000002
+            ]
+          },
+          "bbox_iou": 0.925563580441005,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 24,
+                "class_name": "backpack",
+                "bbox_xyxy": [
+                  277.44992,
+                  137.6598895,
+                  332.10015999999996,
+                  207.22971850000002
+                ]
+              },
+              "bbox_iou": 0.925563580441005,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.0804228052313036
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 37,
+                "class_name": "surfboard",
+                "bbox_xyxy": [
+                  276.27008,
+                  138.5399365,
+                  285.88032000000004,
+                  230.8398295
+                ]
+              },
+              "bbox_iou": 0.0820515271684815,
+              "mask_coverage": 0.022172949002217297,
+              "area_ratio": 0.2520670996602225
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000007278:missing_box",
+      "image": "000000007278",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 12960199,
+            "category_id": 42,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              220.0,
+              58.0,
+              338.0,
+              119.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 3071
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 37,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              283.76992,
+              57.929893,
+              337.6496,
+              119.289939
+            ]
+          },
+          "bbox_iou": 0.4553801730584978,
+          "mask_coverage": 0.624226636274829,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 37,
+                "class_name": "surfboard",
+                "bbox_xyxy": [
+                  283.76992,
+                  57.929893,
+                  337.6496,
+                  119.289939
+                ]
+              },
+              "bbox_iou": 0.4553801730584978,
+              "mask_coverage": 0.624226636274829,
+              "area_ratio": 0.4593025344908698
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  189.78016,
+                  59.410115000000005,
+                  311.6304,
+                  154.300009
+                ]
+              },
+              "bbox_iou": 0.41054129932688244,
+              "mask_coverage": 0.5923152067730381,
+              "area_ratio": 1.6063290299353374
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000007278:bbox_drift",
+      "image": "000000007278",
+      "type": "bbox_drift",
+      "possible_types": [
+        "bbox_drift"
+      ],
+      "reason": "Box cùng lớp không bao phủ đủ pixel của segment; cần mở ảnh kiểm tra.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 12960199,
+            "category_id": 42,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              220.0,
+              58.0,
+              338.0,
+              119.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 3071
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 37,
+            "class_name": "surfboard",
+            "bbox_xyxy": [
+              283.76992,
+              57.929893,
+              337.6496,
+              119.289939
+            ]
+          },
+          "bbox_iou": 0.4553801730584978,
+          "mask_coverage": 0.624226636274829,
+          "measurements": {
+            "image": "000000007278",
+            "type": "bbox_drift",
+            "segment_id": 12960199,
+            "box_xyxy": [
+              283.76992,
+              57.929893,
+              337.6496,
+              119.289939
+            ],
+            "segment_pixels": 3071,
+            "pixels_inside_box": 1917,
+            "coverage": 0.624226636274829,
+            "coverage_threshold": 0.9,
+            "box_row": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000007888:missing_box",
+      "image": "000000007888",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 10987431,
+            "category_id": 85,
+            "class_name": "clock",
+            "bbox_xyxy": [
+              184.0,
+              243.0,
+              470.0,
+              417.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 24378
+          },
+          "detection": {
+            "row": 2,
+            "class_id": 74,
+            "class_name": "clock",
+            "bbox_xyxy": [
+              319.080069,
+              242.77023999999997,
+              470.12975900000004,
+              403.43008
+            ]
+          },
+          "bbox_iou": 0.4859961602620935,
+          "mask_coverage": 0.578472393141357,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 2,
+                "class_id": 74,
+                "class_name": "clock",
+                "bbox_xyxy": [
+                  319.080069,
+                  242.77023999999997,
+                  470.12975900000004,
+                  403.43008
+                ]
+              },
+              "bbox_iou": 0.4859961602620935,
+              "mask_coverage": 0.578472393141357,
+              "area_ratio": 0.4876541079384617
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 74,
+                "class_name": "clock",
+                "bbox_xyxy": [
+                  184.09011500000003,
+                  250.25024000000002,
+                  302.019949,
+                  417.08032000000003
+                ]
+              },
+              "bbox_iou": 0.3950853873976041,
+              "mask_coverage": 0.42152760685864304,
+              "area_ratio": 0.3953509291979487
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000007888:instance_merge",
+      "image": "000000007888",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 10987431,
+            "category_id": 85,
+            "class_name": "clock",
+            "bbox_xyxy": [
+              184.0,
+              243.0,
+              470.0,
+              417.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 24378
+          },
+          "detections": [
+            {
+              "row": 2,
+              "class_id": 74,
+              "class_name": "clock",
+              "bbox_xyxy": [
+                319.080069,
+                242.77023999999997,
+                470.12975900000004,
+                403.43008
+              ]
+            },
+            {
+              "row": 1,
+              "class_id": 74,
+              "class_name": "clock",
+              "bbox_xyxy": [
+                184.09011500000003,
+                250.25024000000002,
+                302.019949,
+                417.08032000000003
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000007888",
+            "type": "instance_merge",
+            "segment_id": 10987431,
+            "boxes_xyxy": [
+              [
+                319.080069,
+                242.77023999999997,
+                470.12975900000004,
+                403.43008
+              ],
+              [
+                184.09011500000003,
+                250.25024000000002,
+                302.019949,
+                417.08032000000003
+              ]
+            ],
+            "segment_pixels": 24378,
+            "pixels_inside_boxes": [
+              14102,
+              10276
+            ],
+            "shared_pixels": 0,
+            "exclusive_segment_fractions": [
+              0.578472393141357,
+              0.42152760685864304
+            ],
+            "combined_coverage": 1.0,
+            "box_iou": 0.0,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              2,
+              1
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000009769:class_swap",
+      "image": "000000009769",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 5263205,
+            "category_id": 8,
+            "class_name": "truck",
+            "bbox_xyxy": [
+              85.0,
+              188.0,
+              464.0,
+              377.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 45883
+          },
+          "detection": {
+            "row": 5,
+            "class_id": 72,
+            "class_name": "refrigerator",
+            "bbox_xyxy": [
+              84.55008000000004,
+              187.84992,
+              463.83008000000007,
+              376.72992
+            ]
+          },
+          "bbox_iou": 0.9961508415643946,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 5,
+                "class_id": 72,
+                "class_name": "refrigerator",
+                "bbox_xyxy": [
+                  84.55008000000004,
+                  187.84992,
+                  463.83008000000007,
+                  376.72992
+                ]
+              },
+              "bbox_iou": 0.9961508415643946,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.000103396574109
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  139.50976,
+                  200.67983999999998,
+                  183.28959999999998,
+                  274.57008
+                ]
+              },
+              "bbox_iou": 0.045160655090136954,
+              "mask_coverage": 0.025891942549528146,
+              "area_ratio": 0.045160655090136954
+            },
+            {
+              "detection": {
+                "row": 4,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  252.28992,
+                  200.35008,
+                  300.49984,
+                  235.58016
+                ]
+              },
+              "bbox_iou": 0.023710953894174325,
+              "mask_coverage": 0.018394612383671512,
+              "area_ratio": 0.023710953894174325
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000010707:bbox_drift",
+      "image": "000000010707",
+      "type": "bbox_drift",
+      "possible_types": [
+        "bbox_drift"
+      ],
+      "reason": "Box cùng lớp không bao phủ đủ pixel của segment; cần mở ảnh kiểm tra.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 4423619,
+            "category_id": 63,
+            "class_name": "couch",
+            "bbox_xyxy": [
+              0.0,
+              202.0,
+              236.0,
+              427.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 18529
+          },
+          "detection": {
+            "row": 3,
+            "class_id": 57,
+            "class_name": "couch",
+            "bbox_xyxy": [
+              14.906559999999995,
+              251.05800000000002,
+              251.30656000000002,
+              477.17784
+            ]
+          },
+          "bbox_iou": 0.5749694750477781,
+          "mask_coverage": 0.6727832047061363,
+          "measurements": {
+            "image": "000000010707",
+            "type": "bbox_drift",
+            "segment_id": 4423619,
+            "box_xyxy": [
+              14.906559999999995,
+              251.05800000000002,
+              251.30656000000002,
+              477.17784
+            ],
+            "segment_pixels": 18529,
+            "pixels_inside_box": 12466,
+            "coverage": 0.6727832047061363,
+            "coverage_threshold": 0.9,
+            "box_row": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000013923:instance_merge",
+      "image": "000000013923",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 4080824,
+            "category_id": 62,
+            "class_name": "chair",
+            "bbox_xyxy": [
+              244.0,
+              287.0,
+              337.0,
+              410.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 7015
+          },
+          "detections": [
+            {
+              "row": 4,
+              "class_id": 56,
+              "class_name": "chair",
+              "bbox_xyxy": [
+                213.50016,
+                232.3701975,
+                335.88991999999996,
+                370.4000825
+              ]
+            },
+            {
+              "row": 19,
+              "class_id": 56,
+              "class_name": "chair",
+              "bbox_xyxy": [
+                240.48000000000002,
+                369.4098695,
+                339.29983999999996,
+                426.99978649999997
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000013923",
+            "type": "instance_merge",
+            "segment_id": 4080824,
+            "boxes_xyxy": [
+              [
+                213.50016,
+                232.3701975,
+                335.88991999999996,
+                370.4000825
+              ],
+              [
+                240.48000000000002,
+                369.4098695,
+                339.29983999999996,
+                426.99978649999997
+              ]
+            ],
+            "segment_pixels": 7015,
+            "pixels_inside_boxes": [
+              5290,
+              1771
+            ],
+            "shared_pixels": 46,
+            "exclusive_segment_fractions": [
+              0.7475409836065574,
+              0.2459016393442623
+            ],
+            "combined_coverage": 1.0,
+            "box_iou": 0.004200807701905419,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              4,
+              19
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000014038:bbox_drift",
+      "image": "000000014038",
+      "type": "bbox_drift",
+      "possible_types": [
+        "bbox_drift"
+      ],
+      "reason": "Box cùng lớp không bao phủ đủ pixel của segment; cần mở ảnh kiểm tra.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 6386305,
+            "category_id": 84,
+            "class_name": "book",
+            "bbox_xyxy": [
+              502.0,
+              287.0,
+              544.0,
+              300.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 172
+          },
+          "detection": {
+            "row": 9,
+            "class_id": 73,
+            "class_name": "book",
+            "bbox_xyxy": [
+              501.79967999999997,
+              291.710174,
+              544.94976,
+              306.520242
+            ]
+          },
+          "bbox_iou": 0.4160351236293497,
+          "mask_coverage": 0.872093023255814,
+          "measurements": {
+            "image": "000000014038",
+            "type": "bbox_drift",
+            "segment_id": 6386305,
+            "box_xyxy": [
+              501.79967999999997,
+              291.710174,
+              544.94976,
+              306.520242
+            ],
+            "segment_pixels": 172,
+            "pixels_inside_box": 150,
+            "coverage": 0.872093023255814,
+            "coverage_threshold": 0.9,
+            "box_row": 9
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000014038:instance_merge",
+      "image": "000000014038",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 5661067,
+            "category_id": 84,
+            "class_name": "book",
+            "bbox_xyxy": [
+              504.0,
+              275.0,
+              539.0,
+              291.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 266
+          },
+          "detections": [
+            {
+              "row": 8,
+              "class_id": 73,
+              "class_name": "book",
+              "bbox_xyxy": [
+                507.8,
+                270.549762,
+                544.2,
+                284.089932
+              ]
+            },
+            {
+              "row": 19,
+              "class_id": 73,
+              "class_name": "book",
+              "bbox_xyxy": [
+                500.90048,
+                283.6699775,
+                542.86016,
+                296.1601545
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000014038",
+            "type": "instance_merge",
+            "segment_id": 5661067,
+            "boxes_xyxy": [
+              [
+                507.8,
+                270.549762,
+                544.2,
+                284.089932
+              ],
+              [
+                500.90048,
+                283.6699775,
+                542.86016,
+                296.1601545
+              ]
+            ],
+            "segment_pixels": 266,
+            "pixels_inside_boxes": [
+              54,
+              184
+            ],
+            "shared_pixels": 0,
+            "exclusive_segment_fractions": [
+              0.20300751879699247,
+              0.6917293233082706
+            ],
+            "combined_coverage": 0.8947368421052632,
+            "box_iou": 0.014691023424097642,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              8,
+              19
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000017959:instance_merge",
+      "image": "000000017959",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 2365329,
+            "category_id": 38,
+            "class_name": "kite",
+            "bbox_xyxy": [
+              272.0,
+              234.0,
+              326.0,
+              331.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 2172
+          },
+          "detections": [
+            {
+              "row": 13,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                191.33984,
+                272.41020100000003,
+                324.28,
+                398.300049
+              ]
+            },
+            {
+              "row": 12,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                271.26976,
+                176.830094,
+                419.96992000000006,
+                267.249906
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000017959",
+            "type": "instance_merge",
+            "segment_id": 2365329,
+            "boxes_xyxy": [
+              [
+                191.33984,
+                272.41020100000003,
+                324.28,
+                398.300049
+              ],
+              [
+                271.26976,
+                176.830094,
+                419.96992000000006,
+                267.249906
+              ]
+            ],
+            "segment_pixels": 2172,
+            "pixels_inside_boxes": [
+              1413,
+              613
+            ],
+            "shared_pixels": 0,
+            "exclusive_segment_fractions": [
+              0.6505524861878453,
+              0.2822283609576427
+            ],
+            "combined_coverage": 0.932780847145488,
+            "box_iou": 0.0,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              13,
+              12
+            ]
+          }
+        },
+        {
+          "segment": {
+            "id": 3616632,
+            "category_id": 38,
+            "class_name": "kite",
+            "bbox_xyxy": [
+              271.0,
+              177.0,
+              420.0,
+              267.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 6575
+          },
+          "detections": [
+            {
+              "row": 10,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                242.57984,
+                121.69991050000002,
+                459.23008000000004,
+                229.47001349999996
+              ]
+            },
+            {
+              "row": 16,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                349.63967999999994,
+                95.449872,
+                640.0,
+                277.29977799999995
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000017959",
+            "type": "instance_merge",
+            "segment_id": 3616632,
+            "boxes_xyxy": [
+              [
+                242.57984,
+                121.69991050000002,
+                459.23008000000004,
+                229.47001349999996
+              ],
+              [
+                349.63967999999994,
+                95.449872,
+                640.0,
+                277.29977799999995
+              ]
+            ],
+            "segment_pixels": 6575,
+            "pixels_inside_boxes": [
+              4712,
+              2858
+            ],
+            "shared_pixels": 1402,
+            "exclusive_segment_fractions": [
+              0.5034220532319391,
+              0.22144486692015208
+            ],
+            "combined_coverage": 0.9380988593155893,
+            "box_iou": 0.18356538394402416,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              10,
+              16
+            ]
+          }
+        },
+        {
+          "segment": {
+            "id": 3616632,
+            "category_id": 38,
+            "class_name": "kite",
+            "bbox_xyxy": [
+              271.0,
+              177.0,
+              420.0,
+              267.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 6575
+          },
+          "detections": [
+            {
+              "row": 14,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                164.12992,
+                141.29003,
+                331.34016,
+                344.70002
+              ]
+            },
+            {
+              "row": 16,
+              "class_id": 33,
+              "class_name": "kite",
+              "bbox_xyxy": [
+                349.63967999999994,
+                95.449872,
+                640.0,
+                277.29977799999995
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000017959",
+            "type": "instance_merge",
+            "segment_id": 3616632,
+            "boxes_xyxy": [
+              [
+                164.12992,
+                141.29003,
+                331.34016,
+                344.70002
+              ],
+              [
+                349.63967999999994,
+                95.449872,
+                640.0,
+                277.29977799999995
+              ]
+            ],
+            "segment_pixels": 6575,
+            "pixels_inside_boxes": [
+              2867,
+              2858
+            ],
+            "shared_pixels": 0,
+            "exclusive_segment_fractions": [
+              0.4360456273764259,
+              0.43467680608365017
+            ],
+            "combined_coverage": 0.870722433460076,
+            "box_iou": 0.0,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              14,
+              16
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000019109:instance_merge",
+      "image": "000000019109",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 4864814,
+            "category_id": 4,
+            "class_name": "motorcycle",
+            "bbox_xyxy": [
+              284.0,
+              251.0,
+              341.0,
+              350.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 1530
+          },
+          "detections": [
+            {
+              "row": 5,
+              "class_id": 3,
+              "class_name": "motorcycle",
+              "bbox_xyxy": [
+                312.68,
+                251.540094,
+                372.55008000000004,
+                354.440282
+              ]
+            },
+            {
+              "row": 4,
+              "class_id": 3,
+              "class_name": "motorcycle",
+              "bbox_xyxy": [
+                186.17024,
+                271.189788,
+                320.52031999999997,
+                366.199796
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000019109",
+            "type": "instance_merge",
+            "segment_id": 4864814,
+            "boxes_xyxy": [
+              [
+                312.68,
+                251.540094,
+                372.55008000000004,
+                354.440282
+              ],
+              [
+                186.17024,
+                271.189788,
+                320.52031999999997,
+                366.199796
+              ]
+            ],
+            "segment_pixels": 1530,
+            "pixels_inside_boxes": [
+              901,
+              846
+            ],
+            "shared_pixels": 273,
+            "exclusive_segment_fractions": [
+              0.41045751633986927,
+              0.37450980392156863
+            ],
+            "combined_coverage": 0.9633986928104575,
+            "box_iou": 0.035720853372492915,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              5,
+              4
+            ]
+          }
+        },
+        {
+          "segment": {
+            "id": 5523777,
+            "category_id": 4,
+            "class_name": "motorcycle",
+            "bbox_xyxy": [
+              431.0,
+              253.0,
+              491.0,
+              338.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 1657
+          },
+          "detections": [
+            {
+              "row": 27,
+              "class_id": 3,
+              "class_name": "motorcycle",
+              "bbox_xyxy": [
+                457.22015999999996,
+                251.67983600000002,
+                527.28032,
+                336.899772
+              ]
+            },
+            {
+              "row": 8,
+              "class_id": 3,
+              "class_name": "motorcycle",
+              "bbox_xyxy": [
+                378.59008000000006,
+                249.099852,
+                461.53024000000005,
+                344.459964
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000019109",
+            "type": "instance_merge",
+            "segment_id": 5523777,
+            "boxes_xyxy": [
+              [
+                457.22015999999996,
+                251.67983600000002,
+                527.28032,
+                336.899772
+              ],
+              [
+                378.59008000000006,
+                249.099852,
+                461.53024000000005,
+                344.459964
+              ]
+            ],
+            "segment_pixels": 1657,
+            "pixels_inside_boxes": [
+              1164,
+              676
+            ],
+            "shared_pixels": 192,
+            "exclusive_segment_fractions": [
+              0.5866022933011467,
+              0.292094146047073
+            ],
+            "combined_coverage": 0.9945684972842487,
+            "box_iou": 0.02718278963232739,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              27,
+              8
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000019221:missing_box",
+      "image": "000000019221",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 4627337,
+            "category_id": 56,
+            "class_name": "broccoli",
+            "bbox_xyxy": [
+              85.0,
+              128.0,
+              449.0,
+              449.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 61860
+          },
+          "detection": {
+            "row": 1,
+            "class_id": 0,
+            "class_name": "person",
+            "bbox_xyxy": [
+              244.91008,
+              339.429951,
+              552.12032,
+              474.779953
+            ]
+          },
+          "bbox_iou": 0.16435167026557645,
+          "mask_coverage": 0.06752344002586486,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  244.91008,
+                  339.429951,
+                  552.12032,
+                  474.779953
+                ]
+              },
+              "bbox_iou": 0.16435167026557645,
+              "mask_coverage": 0.06752344002586486,
+              "area_ratio": 0.3558668532266994
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000020247:missing_box",
+      "image": "000000020247",
+      "type": "missing_box",
+      "possible_types": [
+        "missing_box"
+      ],
+      "reason": "Significant thing segment has no strong detection match; inspect nearby boxes.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 3884370,
+            "category_id": 23,
+            "class_name": "bear",
+            "bbox_xyxy": [
+              1.0,
+              15.0,
+              86.0,
+              265.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 14137
+          },
+          "detection": {
+            "row": 1,
+            "class_id": 21,
+            "class_name": "bear",
+            "bbox_xyxy": [
+              333.21024,
+              176.14973600000002,
+              510.64,
+              439.19984999999997
+            ]
+          },
+          "bbox_iou": 0.0,
+          "mask_coverage": 0.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 21,
+                "class_name": "bear",
+                "bbox_xyxy": [
+                  333.21024,
+                  176.14973600000002,
+                  510.64,
+                  439.19984999999997
+                ]
+              },
+              "bbox_iou": 0.0,
+              "mask_coverage": 0.0,
+              "area_ratio": 2.196372639764359
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "000000024919:instance_merge",
+      "image": "000000024919",
+      "type": "instance_merge",
+      "possible_types": [
+        "instance_merge"
+      ],
+      "reason": "Một segment có pixel riêng đáng kể trong hai box cùng lớp; cần xem số vật thực tế.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 3424844,
+            "category_id": 22,
+            "class_name": "elephant",
+            "bbox_xyxy": [
+              114.0,
+              135.0,
+              519.0,
+              297.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 39107
+          },
+          "detections": [
+            {
+              "row": 1,
+              "class_id": 20,
+              "class_name": "elephant",
+              "bbox_xyxy": [
+                292.61983999999995,
+                134.58985,
+                518.84,
+                285.05005
+              ]
+            },
+            {
+              "row": 2,
+              "class_id": 20,
+              "class_name": "elephant",
+              "bbox_xyxy": [
+                114.35040000000001,
+                148.97015,
+                341.14016,
+                297.63005
+              ]
+            }
+          ],
+          "measurements": {
+            "image": "000000024919",
+            "type": "instance_merge",
+            "segment_id": 3424844,
+            "boxes_xyxy": [
+              [
+                292.61983999999995,
+                134.58985,
+                518.84,
+                285.05005
+              ],
+              [
+                114.35040000000001,
+                148.97015,
+                341.14016,
+                297.63005
+              ]
+            ],
+            "segment_pixels": 39107,
+            "pixels_inside_boxes": [
+              22139,
+              22189
+            ],
+            "shared_pixels": 5221,
+            "exclusive_segment_fractions": [
+              0.43260797299716164,
+              0.4338865164804255
+            ],
+            "combined_coverage": 1.0,
+            "box_iou": 0.10797620078100087,
+            "min_segment_fraction": 0.15,
+            "min_combined_coverage": 0.85,
+            "max_box_iou": 0.3,
+            "box_rows": [
+              1,
+              2
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "000000025096:class_swap",
+      "image": "000000025096",
+      "type": "class_swap",
+      "possible_types": [
+        "class_swap",
+        "category_swap"
+      ],
+      "reason": "Strong spatial match but class names disagree; inspect both sources.",
+      "image_available": true,
+      "evidence": [
+        {
+          "segment": {
+            "id": 6191773,
+            "category_id": 61,
+            "class_name": "cake",
+            "bbox_xyxy": [
+              0.0,
+              233.0,
+              375.0,
+              500.0
+            ],
+            "iscrowd": 0,
+            "isthing": 1,
+            "mask_pixels": 52751
+          },
+          "detection": {
+            "row": 6,
+            "class_id": 60,
+            "class_name": "dining table",
+            "bbox_xyxy": [
+              0.0,
+              232.68,
+              375.0,
+              500.0
+            ]
+          },
+          "bbox_iou": 0.9988029328146042,
+          "mask_coverage": 1.0,
+          "nearest_boxes": [
+            {
+              "detection": {
+                "row": 6,
+                "class_id": 60,
+                "class_name": "dining table",
+                "bbox_xyxy": [
+                  0.0,
+                  232.68,
+                  375.0,
+                  500.0
+                ]
+              },
+              "bbox_iou": 0.9988029328146042,
+              "mask_coverage": 1.0,
+              "area_ratio": 1.0011985018726592
+            },
+            {
+              "detection": {
+                "row": 4,
+                "class_id": 36,
+                "class_name": "skateboard",
+                "bbox_xyxy": [
+                  101.22018750000001,
+                  277.25,
+                  326.24006249999996,
+                  409.69999999999993
+                ]
+              },
+              "bbox_iou": 0.29766674101123575,
+              "mask_coverage": 0.18084965213929594,
+              "area_ratio": 0.29766674101123575
+            },
+            {
+              "detection": {
+                "row": 1,
+                "class_id": 0,
+                "class_name": "person",
+                "bbox_xyxy": [
+                  1.1199375000000011,
+                  37.08,
+                  212.3600625,
+                  328.09
+                ]
+              },
+              "bbox_iou": 0.1419451493109106,
+              "mask_coverage": 0.1033155769558871,
+              "area_ratio": 0.6139624347191012
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "image": "000000014380",
+      "reason": "unknown category for segment 4341613"
+    },
+    {
+      "image": "000000018150",
+      "reason": "image unavailable: human review blocked"
+    }
+  ],
+  "summary": {
+    "candidates": 17,
+    "images": 14,
+    "by_type": {
+      "bbox_drift": 3,
+      "class_swap": 3,
+      "instance_merge": 7,
+      "missing_box": 4
+    },
+    "diagnostics": 2
+  }
+}

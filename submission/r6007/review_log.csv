@@ -1,0 +1,18 @@
+image,type,verdict,note
+000000006460,class_swap,confirmed,Nguyễn Gia Huy (review chung cả nhóm): detection box labeled backpack covers the surfer (person); panoptic person segment correct; detection mislabeled
+000000009769,class_swap,confirmed,Đặng Minh Quân (review chung cả nhóm): detection labeled refrigerator covers red pickup truck with plow; panoptic truck segment correct; detection mislabeled
+000000020247,missing_box,confirmed,Đặng Quốc Thái (review chung cả nhóm): left brown bear fully visible at image edge with no detection box; only the lower-right bear is boxed
+000000024919,instance_merge,confirmed,Nguyễn Gia Huy (review chung cả nhóm): two touching elephants share one panoptic segment; detection keeps two separate elephant boxes; panoptic merged instances
+000000007888,instance_merge,confirmed,Nguyễn Hải Đăng (review chung cả nhóm): two clock detection boxes share one panoptic clock segment; panoptic merged two instances
+000000025096,category_swap,confirmed,Nguyễn Tuấn Hưng (review chung cả nhóm): panoptic cake segment actually covers the dining table; detection dining table correct; panoptic mislabeled
+000000019221,missing_box,confirmed,Nguyễn Hải Đăng (review chung cả nhóm): large broccoli segment with no detection box; only the caterpillar/person area is boxed
+000000006614,bbox_drift,confirmed,"Đặng Quốc Thái (review chung cả nhóm): Box dòng 2 lớp orange hơi lệch so với quả cam được mask segment 15921906 biểu diễn, không bám đúng vùng vật."
+000000010707,bbox_drift,confirmed,Đặng Minh Quân (review chung cả nhóm): Box dòng 3 lớp couch không khoanh đúng vùng ghế sofa và không bao hết phần ghế; đối chiếu mask segment 4423619.
+000000006723,class_swap,rejected,"Cao Quang Linh (review chung cả nhóm): no visible bus or truck at the paired location; background noise, natural COCO discrepancy"
+000000007888,bbox_drift,rejected,Nguyễn Tuấn Hưng (review chung cả nhóm): no drift on the clock boxes; the real issue is instance_merge
+000000009590,class_swap,rejected,Đặng Quốc Thái (review chung cả nhóm): box sits on empty window area; cups and bowls are elsewhere on the table; natural noise
+000000009914,class_swap,rejected,Nguyễn Gia Huy (review chung cả nhóm): fries and grilled chicken platter; neither hot dog nor sandwich clearly identifiable; natural noise
+000000011122,instance_merge,rejected,Cao Quang Linh (review chung cả nhóm): duplicate stop-sign boxes already caught by duplicate_box rule; not a merged instance
+000000017436,instance_merge,rejected,Nguyễn Tuấn Hưng (review chung cả nhóm): duplicate person boxes already caught by duplicate_box rule; not a merged instance
+000000018380,class_swap,rejected,Nguyễn Hải Đăng (review chung cả nhóm): box on empty shirt area; real glasses sit elsewhere on the table; natural noise
+000000020553,class_swap,rejected,Đặng Minh Quân (review chung cả nhóm): box on empty dirt; no bottle or vase at the pair; natural noise
