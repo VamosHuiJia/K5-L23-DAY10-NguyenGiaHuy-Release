@@ -16,3 +16,12 @@ image,type,verdict,note
 000000017436,instance_merge,rejected,Nguyễn Tuấn Hưng (review chung cả nhóm): duplicate person boxes already caught by duplicate_box rule; not a merged instance
 000000018380,class_swap,rejected,Nguyễn Hải Đăng (review chung cả nhóm): box on empty shirt area; real glasses sit elsewhere on the table; natural noise
 000000020553,class_swap,rejected,Đặng Minh Quân (review chung cả nhóm): box on empty dirt; no bottle or vase at the pair; natural noise
+000000001353,instance_merge,rejected,Nguyễn Gia Huy: Mask 793662 thuộc người bị che khuất; box dòng 6 và dòng 4 thuộc những người khác và chồng lên vùng mask do che khuất; không phải gộp hai người trong cùng segment.
+000000007278,missing_box,rejected,Nguyễn Gia Huy: Chiếc ván của segment 12960199 đã có box detection dòng 2; box và mask cùng một chiếc ván nên không phải thiếu box cho đối tượng này.
+000000007278,bbox_drift,rejected,Nguyễn Gia Huy: Box dòng 2 và mask 12960199 cùng chiếc ván; một phần mask lấn vào vùng mông người lướt ván nên chênh lệch này không xác nhận box bị lệch.
+000000007888,missing_box,rejected,Nguyễn Gia Huy: Hai chiếc đồng hồ trong vùng segment 10987431 đều đã được khoanh bằng hai box riêng ở dòng 1 và dòng 2; không thiếu box cho hai đồng hồ này.
+000000013923,instance_merge,rejected,Nguyễn Gia Huy: Segment 4080824 chỉ tô một chiếc ghế; mask không tô hết ghế và các box khoanh khác vùng mask nhưng không gộp phần của hai chiếc ghế.
+000000014038,bbox_drift,rejected,Nguyễn Gia Huy: Box detection dòng 9 khoanh đúng quyển sách được segment 6386305 tô màu; không xác nhận ứng viên lệch box trong vùng đối chiếu này.
+000000017959,instance_merge,rejected,Nguyễn Gia Huy: Mask 2365329 chỉ tô một con diều nằm giữa hai box của hai con diều khác; mask 3616632 chỉ tô một con diều của box dòng 12; không có segment gộp nhiều con diều.
+000000019109,instance_merge,rejected,Nguyễn Gia Huy: Segment 4864814 đối chiếu box dòng 4 và 5 chỉ tô một xe máy; segment 5523777 đối chiếu box dòng 8 và 27 cũng chỉ tô một xe máy; hai segment không gộp phần của nhiều xe.
+000000014038,instance_merge,rejected,Nguyễn Gia Huy: Segment 5661067 khi đối chiếu với box dòng 8 và dòng 19 chỉ tô một quyển sách; không gộp phần của hai quyển sách khác nhau.
